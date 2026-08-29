@@ -428,41 +428,15 @@ function runRace(durationSec) {
 
     if (currentLeader && leaderBadge) {
       var leaderPrefix = typeof t === 'function' ? t('race_leader_prefix') : '👑 Líder:';
-      leaderBadge.textContent = leaderPrefix + ' ' + currentLeader.name;
+      var pokeName = (currentLeader.pokemon ? ' (' + currentLeader.pokemon.name.toUpperCase() + (currentLeader.pokemon.isShiny ? ' ✨' : '') + ')' : '');
+      leaderBadge.textContent = leaderPrefix + ' ' + currentLeader.name + pokeName;
       leaderBadge.style.borderColor = currentLeader.color;
-    }
-
-    if (window.innerWidth <= 640 && currentLeader && trackContainer && cameraViewport) {
-      var viewportW = cameraViewport.clientWidth;
-      var trackW = trackContainer.scrollWidth || (viewportW * 2.5);
-      var maxTrackScroll = trackW - viewportW;
-      
-      var leaderX = currentLeader.progress * (trackW - 80);
-      var targetScroll = leaderX - (viewportW * 0.45);
-      var clampedScroll = Math.max(0, Math.min(maxTrackScroll, targetScroll));
-
-      trackContainer.style.transform = 'translateX(-' + clampedScroll + 'px)';
-
-      var offLeft = [];
-      var offRight = [];
-
-      raceRunners.forEach(function(r) {
-        var rX = r.progress * (trackW - 80);
-        if (rX < clampedScroll - 20) {
-          offLeft.push(r);
-        } else if (rX > clampedScroll + viewportW + 10) {
-          offRight.push(r);
-        }
-      });
-
-      renderTrackers(trackerLeft, offLeft, 'left');
-      renderTrackers(trackerRight, offRight, 'right');
     }
 
     if (firstFinisher) {
       raceWinner = firstFinisher;
       var trackAreaW = firstFinisher.trackArea.clientWidth || 300;
-      var spriteW = (playerCount > 12 ? 32 : 42);
+      var spriteW = (playerCount > 12 ? 28 : 36);
       firstFinisher.spriteEl.style.left = (trackAreaW - spriteW) + 'px';
       setTimeout(function() { showWinner(firstFinisher); }, 600);
       return;

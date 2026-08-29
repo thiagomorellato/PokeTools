@@ -2035,16 +2035,24 @@ input {
   .config-block { min-width: 130px; }
   .race-names-grid { grid-template-columns: 1fr; }
   
-  .offscreen-tracker { display: flex; }
+  .offscreen-tracker { display: none !important; }
   
-  .race-track-container {
-    width: 250% !important;
-    min-width: 820px;
+  .race-camera-viewport {
+    overflow-x: hidden !important;
   }
   
-  .lane-name-col { width: 90px; min-width: 90px; font-size: 0.65rem; }
-  .race-lane { height: 56px; padding-right: 42px; }
-  .lapras-sprite { height: 38px; }
+  .race-track-container {
+    width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+  }
+  
+  .lane-name-col { width: 68px; min-width: 68px; font-size: 0.60rem; padding: 0 0.25rem; }
+  .race-lane { height: 50px; padding-right: 30px; }
+  .compact-lane { height: 42px; }
+  .lapras-sprite { height: 32px; max-width: 32px; }
+  .compact-sprite { height: 26px; max-width: 26px; }
+  .lapras-floating-name { font-size: 0.42rem; padding: 0.06rem 0.22rem; }
   
   .timer-controls-row { flex-direction: column; }
   .btn-timer-main, .btn-timer-sub { width: 100%; }
