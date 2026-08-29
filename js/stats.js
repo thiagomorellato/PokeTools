@@ -164,21 +164,10 @@ function renderStatsView(targetContainer) {
 
     </div>
 
-    <!-- Tabela / Breakdown por Raridade -->
-    <div class="stats-section-title">${lang === 'en' ? '📊 Breakdown by Rarity' : '📊 Estatísticas por Raridade'}</div>
+    <!-- Breakdown por Raridade em Cards Limpos -->
+    <div class="stats-section-title">${lang === 'en' ? '📊 Performance by Rarity' : '📊 Desempenho por Raridade'}</div>
     
-    <div class="stats-table-wrap">
-      <table class="stats-table">
-        <thead>
-          <tr>
-            <th style="width: 32%;">${lang === 'en' ? 'Rarity' : 'Raridade'}</th>
-            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Seen' : 'Vistos'}</th>
-            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Attempts' : 'Tentativas'}</th>
-            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Caught' : 'Capturas'}</th>
-            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Rate' : 'Taxa'}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div class="stats-rarity-list">
   `;
 
   for (var tier = 1; tier <= 5; tier++) {
@@ -189,43 +178,69 @@ function renderStatsView(targetContainer) {
     var tInfo = tNames[tier];
 
     html += `
-      <tr>
-        <td class="tier-cell">
-          <span class="tier-dot" style="background: ${tInfo.color};"></span>
-          <span style="color: ${tInfo.color}; font-weight: 800;">${tInfo.name}</span>
-        </td>
-        <td class="text-center font-bold">${seen}</td>
-        <td class="text-center">${att}</td>
-        <td class="text-center text-success">${cgt}</td>
-        <td class="text-center">
-          <span class="rate-pill">${att > 0 ? rate + '%' : '-'}</span>
-        </td>
-      </tr>
+      <div class="rarity-metric-card">
+        <div class="rarity-metric-header">
+          <div class="rarity-name-badge">
+            <span class="tier-dot" style="background: ${tInfo.color}; box-shadow: 0 0 6px ${tInfo.color};"></span>
+            <span style="color: ${tInfo.color}; font-weight: 800;">${tInfo.name}</span>
+          </div>
+          <div class="rarity-rate-badge ${att > 0 ? 'has-rate' : ''}">
+            ${att > 0 ? rate + '% ' + (lang === 'en' ? 'catch rate' : 'taxa') : (lang === 'en' ? 'No attempts' : 'Sem tentativas')}
+          </div>
+        </div>
+
+        <div class="rarity-metric-stats">
+          <div class="metric-stat-item">
+            <span class="metric-stat-label">👁️ ${lang === 'en' ? 'Seen' : 'Vistos'}</span>
+            <span class="metric-stat-val font-bold">${seen}</span>
+          </div>
+          <div class="metric-stat-item">
+            <span class="metric-stat-label">🎯 ${lang === 'en' ? 'Attempts' : 'Tentativas'}</span>
+            <span class="metric-stat-val">${att}</span>
+          </div>
+          <div class="metric-stat-item">
+            <span class="metric-stat-label">🔴 ${lang === 'en' ? 'Caught' : 'Capturados'}</span>
+            <span class="metric-stat-val text-success">${cgt}</span>
+          </div>
+        </div>
+      </div>
     `;
   }
 
-  // Linha de Shinies
+  // Card especial de Shinies
   var shinySeen = stats.seenShinies || 0;
   var shinyAtt = stats.attemptsShinies || 0;
   var shinyCgt = stats.caughtShinies || 0;
   var shinyRate = shinyAtt > 0 ? Math.round((shinyCgt / shinyAtt) * 100) : 0;
 
   html += `
-        <tr class="shiny-row">
-          <td class="tier-cell">
+      <div class="rarity-metric-card shiny-metric-card">
+        <div class="rarity-metric-header">
+          <div class="rarity-name-badge">
             <span class="tier-dot" style="background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></span>
             <span style="color: #fbbf24; font-weight: 900;">✨ Shinies</span>
-          </td>
-          <td class="text-center font-bold">${shinySeen}</td>
-          <td class="text-center">${shinyAtt}</td>
-          <td class="text-center text-success">${shinyCgt}</td>
-          <td class="text-center">
-            <span class="rate-pill rate-shiny">${shinyAtt > 0 ? shinyRate + '%' : '-'}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+          </div>
+          <div class="rarity-rate-badge rate-shiny-badge ${shinyAtt > 0 ? 'has-rate' : ''}">
+            ${shinyAtt > 0 ? shinyRate + '% ' + (lang === 'en' ? 'catch rate' : 'taxa') : (lang === 'en' ? 'No attempts' : 'Sem tentativas')}
+          </div>
+        </div>
+
+        <div class="rarity-metric-stats">
+          <div class="metric-stat-item">
+            <span class="metric-stat-label">👁️ ${lang === 'en' ? 'Seen' : 'Vistos'}</span>
+            <span class="metric-stat-val font-bold" style="color: #fbbf24;">${shinySeen}</span>
+          </div>
+          <div class="metric-stat-item">
+            <span class="metric-stat-label">🎯 ${lang === 'en' ? 'Attempts' : 'Tentativas'}</span>
+            <span class="metric-stat-val">${shinyAtt}</span>
+          </div>
+          <div class="metric-stat-item">
+            <span class="metric-stat-label">🔴 ${lang === 'en' ? 'Caught' : 'Capturados'}</span>
+            <span class="metric-stat-val text-success">${shinyCgt}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   `;
 
   if (mostSeenPoke) {
