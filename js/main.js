@@ -44,6 +44,13 @@ function navigateToHomeFromMenu() {
   navigateTo('home');
 }
 
+function openStatsFromMenu() {
+  toggleMenu();
+  if (typeof openStatsModal === 'function') {
+    openStatsModal();
+  }
+}
+
 // ─── MODO DIA / NOITE ───
 function initTheme() {
   var savedTheme = localStorage.getItem('poketools_theme') || 'dark';
@@ -165,10 +172,12 @@ function spawnRoamer(forceShiny, forcedPoke) {
   var poke = forcedPoke || pickRandomGen1Pokemon(activePokemonIds);
   if (!poke) return;
 
-  activePokemonIds.add(poke.id);
-
   // Se forceShiny for true, é 100% Shiny! Caso contrário, chance normal (1 em 300)
   var isShiny = forceShiny === true ? true : (Math.random() < (1 / 300));
+
+  if (typeof recordPokemonSeen === 'function') {
+    recordPokemonSeen(poke, isShiny);
+  }
 
   var goingRight = Math.random() > 0.5;
   var startX = goingRight ? -90 : window.innerWidth + 90;

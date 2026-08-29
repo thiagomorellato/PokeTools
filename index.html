@@ -66,6 +66,11 @@
           <span class="menu-item-icon">🏠</span>
           <span class="menu-item-text" data-i18n="nav_home">Início</span>
         </button>
+        <!-- Estatísticas -->
+        <button class="menu-item-btn" onclick="openStatsFromMenu()">
+          <span class="menu-item-icon">📊</span>
+          <span class="menu-item-text" data-i18n="nav_stats">Estatísticas</span>
+        </button>
       </div>
 
       <div class="menu-divider"></div>
@@ -412,9 +417,8 @@
         </div>
         <div class="pokedex-tabs-row">
           <button class="pokedex-tab-btn active" data-filter="all" onclick="setPokedexFilter('all')" data-i18n="filter_all">Todos (151)</button>
-          <button class="pokedex-tab-btn" data-filter="caught" onclick="setPokedexFilter('caught')" data-i18n="filter_caught">Capturados</button>
-          <button class="pokedex-tab-btn" data-filter="missing" onclick="setPokedexFilter('missing')" data-i18n="filter_missing">Faltantes</button>
           <button class="pokedex-tab-btn" data-filter="shiny" onclick="setPokedexFilter('shiny')" data-i18n="filter_shiny">Shinies ✨</button>
+          <button class="pokedex-tab-btn btn-stats-tab" onclick="openStatsModal()" data-i18n="nav_stats">📊 Estatísticas</button>
         </div>
       </div>
 
@@ -428,8 +432,25 @@
     </div>
   </div>
 
+  <!-- ═══════ MODAL ESTATÍSTICAS DO TREINADOR ═══════ -->
+  <div id="stats-modal" class="pokedex-modal-overlay hidden" onclick="if(event.target===this)closeStatsModal()">
+    <div class="glass-card stats-dialog-card">
+      <div class="stats-dialog-header">
+        <div class="stats-dialog-title">
+          <span class="stats-header-icon">📊</span>
+          <span data-i18n="stats_modal_title">Estatísticas de Treinador</span>
+        </div>
+        <button class="menu-close-btn" onclick="closeStatsModal()" title="Fechar">✕</button>
+      </div>
+      <div id="stats-modal-body" class="stats-dialog-body">
+        <!-- Renderizado via JS -->
+      </div>
+    </div>
+  </div>
+
   <script src="js/i18n.js"></script>
   <script src="js/pokemon-data.js"></script>
+  <script src="js/stats.js"></script>
   <script src="js/pokedex.js"></script>
   <script src="js/main.js"></script>
   <script src="js/timer.js"></script>

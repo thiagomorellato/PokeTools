@@ -85,8 +85,13 @@ function attemptCatch(roamer) {
         ball.classList.add('ball-wiggling');
 
         // Calcula o resultado da captura
-        var pokeInfo = (typeof GEN1_POKEMON !== 'undefined' && GEN1_POKEMON.find(p => p.id === roamer.id)) || { tier: 2 };
+        var pokeInfo = (typeof GEN1_POKEMON !== 'undefined' && GEN1_POKEMON.find(p => p.id === roamer.id)) || { id: roamer.id, tier: 2, name: roamer.name };
         var success = calculateCatchSuccess(pokeInfo.tier);
+
+        // Registra estatísticas
+        if (typeof recordCatchAttempt === 'function') {
+          recordCatchAttempt(pokeInfo, roamer.isShiny, success);
+        }
 
         setTimeout(function() {
           ball.classList.remove('ball-wiggling');

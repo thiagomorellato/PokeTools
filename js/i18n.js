@@ -6,7 +6,9 @@ var TRANSLATIONS = {
   pt: {
     // Navbar & Menu
     nav_home: "Início",
+    nav_stats: "Estatísticas",
     nav_menu_title: "Menu & Opções",
+    stats_modal_title: "Estatísticas de Treinador",
     theme_label: "Aparência",
     theme_dark: "Modo Escuro 🌙",
     theme_light: "Modo Claro ☀️",
@@ -108,7 +110,9 @@ var TRANSLATIONS = {
   en: {
     // Navbar & Menu
     nav_home: "Home",
+    nav_stats: "Trainer Stats",
     nav_menu_title: "Menu & Options",
+    stats_modal_title: "Trainer Statistics",
     theme_label: "Appearance",
     theme_dark: "Dark Mode 🌙",
     theme_light: "Light Mode ☀️",
