@@ -1903,13 +1903,20 @@ input {
 .stats-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 0.82rem;
 }
 .stats-table th, .stats-table td {
-  padding: 0.65rem 0.85rem;
+  padding: 0.65rem 0.6rem;
   text-align: left;
   border-bottom: 1px solid var(--card-border);
+  border-right: 1px solid var(--card-border);
   color: var(--text-main);
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+.stats-table th:last-child, .stats-table td:last-child {
+  border-right: none;
 }
 .stats-table th {
   background: var(--stats-th-bg);
@@ -1930,6 +1937,9 @@ input {
   align-items: center;
   gap: 0.45rem;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
 }
 .tier-dot {
   width: 9px;

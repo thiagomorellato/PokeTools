@@ -171,11 +171,11 @@ function renderStatsView(targetContainer) {
       <table class="stats-table">
         <thead>
           <tr>
-            <th>${lang === 'en' ? 'Rarity' : 'Raridade'}</th>
-            <th class="text-center">${lang === 'en' ? 'Seen' : 'Vistos'}</th>
-            <th class="text-center">${lang === 'en' ? 'Attempts' : 'Tentativas'}</th>
-            <th class="text-center">${lang === 'en' ? 'Caught' : 'Capturas'}</th>
-            <th class="text-center">${lang === 'en' ? 'Rate' : 'Taxa'}</th>
+            <th style="width: 32%;">${lang === 'en' ? 'Rarity' : 'Raridade'}</th>
+            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Seen' : 'Vistos'}</th>
+            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Attempts' : 'Tentativas'}</th>
+            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Caught' : 'Capturas'}</th>
+            <th class="text-center" style="width: 17%;">${lang === 'en' ? 'Rate' : 'Taxa'}</th>
           </tr>
         </thead>
         <tbody>
