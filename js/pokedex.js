@@ -231,16 +231,26 @@ function setPokedexFilter(filter) {
   var statsView = document.getElementById('pokedex-stats-view');
 
   if (filter === 'stats') {
-    if (grid) grid.style.display = 'none';
+    if (grid) {
+      grid.style.display = 'none';
+      grid.classList.add('hidden');
+    }
     if (statsView) {
       statsView.style.display = 'block';
+      statsView.classList.remove('hidden');
       if (typeof renderStatsView === 'function') {
         renderStatsView(statsView);
       }
     }
   } else {
-    if (grid) grid.style.display = 'grid';
-    if (statsView) statsView.style.display = 'none';
+    if (grid) {
+      grid.style.display = 'grid';
+      grid.classList.remove('hidden');
+    }
+    if (statsView) {
+      statsView.style.display = 'none';
+      statsView.classList.add('hidden');
+    }
     renderPokedexGrid();
   }
 }

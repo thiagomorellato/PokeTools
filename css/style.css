@@ -1814,6 +1814,10 @@ input {
 /* ─── VISUALIZAÇÃO DE ESTATÍSTICAS INTEGRADA NA TELA LCD DA POKÉDEX ─── */
 .pokedex-stats-view {
   flex: 1;
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+  box-sizing: border-box;
   background: var(--lcd-bg);
   border: 2px solid var(--lcd-border);
   border-radius: 10px;
@@ -1821,6 +1825,7 @@ input {
   overflow-y: auto;
   animation: fadeIn 0.2s ease-in-out;
 }
+.pokedex-stats-view.hidden { display: none !important; }
 .pokedex-stats-view::-webkit-scrollbar { width: 6px; }
 .pokedex-stats-view::-webkit-scrollbar-thumb { background: rgba(58, 184, 245, 0.4); border-radius: 4px; }
 
