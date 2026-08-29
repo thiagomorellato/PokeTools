@@ -163,13 +163,15 @@ var GEN1_POKEMON = [
   { id: 151, name: 'mew', tier: 5 }
 ];
 
-// Pesos por Tier de raridade (balanceados para encontros emocionantes!)
+// Pesos por Tier calibrados matematicamente:
+// - Lendários/Míticos (Tier 5): exatamente 1 a cada 300 spawns (0.33%)
+// - Raros (Tier 4): exatamente 1 a cada 15 spawns (6.67%)
 var TIER_WEIGHTS = {
-  1: 28, // Muito Comum
-  2: 20, // Comum
-  3: 10, // Incomum
-  4: 8,  // Raro (~13.6% dos spawns - 1 a cada 7)
-  5: 12  // Lendário / Mítico (~4% dos spawns - 1 a cada 25)
+  1: 26, // Muito Comum
+  2: 21, // Comum
+  3: 12, // Incomum
+  4: 4,  // Raro (~1 a cada 15 Pokémons)
+  5: 1   // Lendário / Mítico (~1 a cada 300 Pokémons)
 };
 
 // Sorteia um Pokémon da Gen 1 respeitando os pesos de raridade
