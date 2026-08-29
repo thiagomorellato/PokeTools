@@ -118,8 +118,8 @@
           </div>
           <div class="feature-card card-blue" id="card-race" onclick="navigateTo('race')">
             <div class="card-glow-orb"></div>
-            <div class="card-icon-large">🌊</div>
-            <h2 class="card-title" data-i18n="card_race_title">Lapras Race</h2>
+            <div class="card-icon-large">🏊</div>
+            <h2 class="card-title" data-i18n="card_race_title">Swim Race</h2>
             <p class="card-desc" data-i18n="card_race_desc">Sorteio aleatório</p>
             <div class="card-cta" data-i18n="card_race_cta">Acessar Corrida →</div>
           </div>
@@ -287,7 +287,7 @@
 
     <!-- Setup Screen -->
     <div id="race-setup" class="race-screen">
-      <h1 class="section-title" data-i18n="race_title">🌊 Lapras Race</h1>
+      <h1 class="section-title" data-i18n="race_title">🏊 Swim Race</h1>
 
       <div class="glass-card race-config-card">
         <div class="race-config-row">
@@ -338,7 +338,7 @@
       <!-- Viewport da Câmera (No mobile dá zoom e pan) -->
       <div class="race-camera-viewport" id="race-camera-viewport">
         
-        <!-- Indicadores de Lapras fora da tela (Mobile) -->
+        <!-- Indicadores de Nadadores fora da tela (Mobile) -->
         <div class="offscreen-tracker tracker-left" id="tracker-left"></div>
         <div class="offscreen-tracker tracker-right" id="tracker-right"></div>
 
@@ -376,8 +376,9 @@
         <div class="winner-name-display" id="winner-name-display">---</div>
         <div class="winner-lapras-wrap">
           <img
+            id="winner-pokemon-sprite"
             src="https://play.pokemonshowdown.com/sprites/ani/lapras.gif"
-            alt="Lapras Campeão"
+            alt="Pokémon Campeão"
             class="winner-lapras-sprite"
             onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png'"
           >

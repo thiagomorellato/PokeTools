@@ -1,4 +1,4 @@
-// lapras-race.js — Lapras Race com suporte a até 100 Participantes e Câmera Dinâmica
+// lapras-race.js — Swim Race com Pokémons Aquáticos das Gerações 1, 2 e 3 (até 100 Participantes)
 
 var playerCount    = 4;
 var raceRunners    = [];
@@ -7,13 +7,100 @@ var raceWinner     = null;
 var savedNames     = [];
 var countdownTimer = null;
 
+// ─── ROSTER COMPLETO DE POKÉMONS AQUÁTICOS (GEN 1, 2 E 3) ───
+var WATER_POKEMON_ROSTER = [
+  // Gen 1 (Kanto)
+  { id: 7, name: 'squirtle' },
+  { id: 8, name: 'wartortle' },
+  { id: 9, name: 'blastoise' },
+  { id: 54, name: 'psyduck' },
+  { id: 55, name: 'golduck' },
+  { id: 60, name: 'poliwag' },
+  { id: 61, name: 'poliwhirl' },
+  { id: 62, name: 'poliwrath' },
+  { id: 72, name: 'tentacool' },
+  { id: 73, name: 'tentacruel' },
+  { id: 79, name: 'slowpoke' },
+  { id: 80, name: 'slowbro' },
+  { id: 86, name: 'seel' },
+  { id: 87, name: 'dewgong' },
+  { id: 90, name: 'shellder' },
+  { id: 91, name: 'cloyster' },
+  { id: 98, name: 'krabby' },
+  { id: 99, name: 'kingler' },
+  { id: 116, name: 'horsea' },
+  { id: 117, name: 'seadra' },
+  { id: 118, name: 'goldeen' },
+  { id: 119, name: 'seaking' },
+  { id: 120, name: 'staryu' },
+  { id: 121, name: 'starmie' },
+  { id: 129, name: 'magikarp' },
+  { id: 130, name: 'gyarados' },
+  { id: 131, name: 'lapras' },
+  { id: 134, name: 'vaporeon' },
+  { id: 138, name: 'omanyte' },
+  { id: 139, name: 'omastar' },
+  { id: 140, name: 'kabuto' },
+  { id: 141, name: 'kabutops' },
+
+  // Gen 2 (Johto)
+  { id: 158, name: 'totodile' },
+  { id: 159, name: 'croconaw' },
+  { id: 160, name: 'feraligatr' },
+  { id: 170, name: 'chinchou' },
+  { id: 171, name: 'lanturn' },
+  { id: 183, name: 'marill' },
+  { id: 184, name: 'azumarill' },
+  { id: 186, name: 'politoed' },
+  { id: 194, name: 'wooper' },
+  { id: 195, name: 'quagsire' },
+  { id: 199, name: 'slowking' },
+  { id: 211, name: 'qwilfish' },
+  { id: 222, name: 'corsola' },
+  { id: 223, name: 'remoraid' },
+  { id: 224, name: 'octillery' },
+  { id: 226, name: 'mantine' },
+  { id: 230, name: 'kingdra' },
+  { id: 245, name: 'suicune' },
+
+  // Gen 3 (Hoenn)
+  { id: 258, name: 'mudkip' },
+  { id: 259, name: 'marshtomp' },
+  { id: 260, name: 'swampert' },
+  { id: 270, name: 'lotad' },
+  { id: 271, name: 'lombre' },
+  { id: 272, name: 'ludicolo' },
+  { id: 278, name: 'wingull' },
+  { id: 279, name: 'pelipper' },
+  { id: 283, name: 'surskit' },
+  { id: 318, name: 'carvanha' },
+  { id: 319, name: 'sharpedo' },
+  { id: 320, name: 'wailmer' },
+  { id: 321, name: 'wailord' },
+  { id: 339, name: 'barboach' },
+  { id: 340, name: 'whiscash' },
+  { id: 341, name: 'corphish' },
+  { id: 342, name: 'crawdaunt' },
+  { id: 349, name: 'feebas' },
+  { id: 350, name: 'milotic' },
+  { id: 363, name: 'spheal' },
+  { id: 364, name: 'sealeo' },
+  { id: 365, name: 'walrein' },
+  { id: 366, name: 'clamperl' },
+  { id: 367, name: 'huntail' },
+  { id: 368, name: 'gorebyss' },
+  { id: 369, name: 'relicanth' },
+  { id: 370, name: 'luvdisc' },
+  { id: 382, name: 'kyogre' }
+];
+
 // Paleta dinâmica vibrante de cores para até 100 jogadores
 function getLaneColor(index, total) {
   var hue = Math.round((index * 360) / Math.max(1, total));
   return 'hsl(' + hue + ', 85%, 58%)';
 }
 
-// ─── AJUSTE DE PARTICIPANTES E DURAÇÃO (Botões + / - e Digitação) ───
+// ─── AJUSTE DE PARTICIPANTES E DURAÇÃO ───
 function adjustPlayers(delta) {
   setPlayerCount(playerCount + delta);
 }
@@ -53,7 +140,7 @@ function setPlayerCount(val) {
   generateRaceNames();
 }
 
-// ─── GERAR CAMPOS DE NOMES (Com scroll para muitos corredores) ───
+// ─── GERAR CAMPOS DE NOMES ───
 function generateRaceNames() {
   var grid = document.getElementById('race-names-grid');
   if (!grid) return;
@@ -62,7 +149,7 @@ function generateRaceNames() {
   for (var i = 0; i < playerCount; i++) {
     var color = getLaneColor(i, playerCount);
     var saved = savedNames[i] || '';
-    var prefix = typeof t === 'function' ? t('race_participant_prefix') : 'Lapras';
+    var prefix = typeof t === 'function' ? t('race_participant_prefix') : 'Nadador';
     var placeholderText = typeof t === 'function' ? t('race_participant_placeholder') : 'Nome do Participante';
 
     var field = document.createElement('div');
@@ -98,6 +185,35 @@ function generateRaceNames() {
   }
 }
 
+// Atribui Pokémons aquáticos únicos (Gens 1, 2 e 3) e Shinies extras
+function assignWaterPokemonToRunners() {
+  var shuffled = WATER_POKEMON_ROSTER.slice().sort(function() { return 0.5 - Math.random(); });
+  
+  for (var i = 0; i < raceRunners.length; i++) {
+    var poke;
+    var isShiny = false;
+
+    if (i < shuffled.length) {
+      poke = shuffled[i];
+      // 5% de chance de variante shiny por pura emoção visual
+      isShiny = Math.random() < 0.05;
+    } else {
+      // Quando passar de 78 participantes, usa variantes Shinies dos mesmos aquáticos!
+      var baseIndex = (i - shuffled.length) % shuffled.length;
+      poke = shuffled[baseIndex];
+      isShiny = true;
+    }
+
+    raceRunners[i].pokemon = {
+      id: poke.id,
+      name: poke.name,
+      isShiny: isShiny,
+      spriteUrl: 'https://play.pokemonshowdown.com/sprites/' + (isShiny ? 'ani-shiny' : 'ani') + '/' + poke.name + '.gif',
+      fallbackUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + (isShiny ? 'shiny/' : '') + poke.id + '.png'
+    };
+  }
+}
+
 // ─── INICIAR CORRIDA ───
 function launchRace() {
   var dur = parseInt(document.getElementById('race-duration').value);
@@ -109,7 +225,7 @@ function launchRace() {
   savedNames = [];
   raceRunners = [];
 
-  var prefix = typeof t === 'function' ? t('race_participant_prefix') : 'Lapras';
+  var prefix = typeof t === 'function' ? t('race_participant_prefix') : 'Nadador';
 
   for (var i = 0; i < playerCount; i++) {
     var inp  = document.getElementById('rp-' + i);
@@ -122,9 +238,13 @@ function launchRace() {
       progress: 0,
       finished: false,
       spriteEl: null,
-      trackArea: null
+      trackArea: null,
+      laneEl: null,
+      pokemon: null
     });
   }
+
+  assignWaterPokemonToRunners();
 
   raceWinner = null;
   cancelAnimationFrame(raceAnimId);
@@ -169,13 +289,15 @@ function buildLanes() {
     floatingName.textContent = runner.name;
     floatingName.style.color = runner.color;
 
+    var poke = runner.pokemon || { name: 'lapras', id: 131, isShiny: false, spriteUrl: 'https://play.pokemonshowdown.com/sprites/ani/lapras.gif', fallbackUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png' };
+
     var sprite = document.createElement('img');
     sprite.className = 'lapras-sprite' + (isCompact ? ' compact-sprite' : '');
-    sprite.alt = 'Lapras';
+    sprite.alt = poke.name;
     sprite.id = 'sprite-' + runner.id;
-    sprite.src = 'https://play.pokemonshowdown.com/sprites/ani/lapras.gif';
+    sprite.src = poke.spriteUrl;
     sprite.onerror = function() {
-      this.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png';
+      this.src = poke.fallbackUrl;
     };
 
     runnerWrap.appendChild(floatingName);
@@ -225,118 +347,117 @@ function showCount(el, val) {
   el.style.animation = 'cdown-pop 0.65s cubic-bezier(0.34,1.56,0.64,1)';
 }
 
-// ─── EXECUÇÃO DA CORRIDA ───
-function runRace(duration) {
-  var durationMs = duration * 1000;
+// ─── EXECUÇÃO DA CORRIDA COM CÂMERA DINÂMICA ───
+function runRace(durationSec) {
+  var startTime = performance.now();
+  var durationMs = durationSec * 1000;
 
-  raceRunners.forEach(function(r) {
-    r.progress  = 0;
-    r.finished  = false;
-    r.targetMs  = durationMs * (0.85 + Math.random() * 0.30);
-    r.baseSpeed = 100 / r.targetMs;
-    r.curSpeed  = r.baseSpeed * (0.75 + Math.random() * 0.5);
+  var runnerSpeeds = raceRunners.map(function() {
+    return 0.85 + Math.random() * 0.30;
   });
 
-  var lastTs = null;
+  var bursts = raceRunners.map(function() {
+    return {
+      active: false,
+      multiplier: 1,
+      nextCheck: 2000 + Math.random() * 3000,
+      duration: 0
+    };
+  });
+
   var trackContainer = document.getElementById('race-track-container');
   var cameraViewport = document.getElementById('race-camera-viewport');
   var trackerLeft    = document.getElementById('tracker-left');
   var trackerRight   = document.getElementById('tracker-right');
   var leaderBadge    = document.getElementById('leader-badge');
 
-  function animate(ts) {
-    if (!lastTs) lastTs = ts;
-    var delta = Math.min(ts - lastTs, 50);
-    lastTs = ts;
+  function animate(now) {
+    var elapsed = now - startTime;
+    var rawProgress = Math.min(elapsed / durationMs, 1);
 
     var firstFinisher = null;
-    var currentLeader = raceRunners[0];
+    var maxProg = -1;
+    var currentLeader = null;
 
-    raceRunners.forEach(function(r) {
-      if (r.finished) return;
+    raceRunners.forEach(function(runner, i) {
+      if (runner.finished) return;
 
-      r.curSpeed += (Math.random() - 0.5) * r.baseSpeed * 0.16;
-      r.curSpeed  = Math.max(r.baseSpeed * 0.3, Math.min(r.baseSpeed * 2.2, r.curSpeed));
-
-      r.progress = Math.min(100, r.progress + r.curSpeed * delta);
-
-      // Posiciona sprite precisamente até a linha de chegada (100%)
-      var trackAreaW = r.trackArea.clientWidth || 300;
-      var spriteW = (playerCount > 12 ? 32 : 42);
-      var maxLeftPx = Math.max(0, trackAreaW - spriteW);
-      var currentLeftPx = (r.progress / 100) * maxLeftPx;
-      r.spriteEl.style.left = currentLeftPx + 'px';
-
-      if (r.progress > currentLeader.progress) {
-        currentLeader = r;
+      var b = bursts[i];
+      if (elapsed > b.nextCheck) {
+        if (!b.active && Math.random() < 0.35) {
+          b.active = true;
+          b.multiplier = (Math.random() < 0.65) ? (1.5 + Math.random() * 0.8) : (0.4 + Math.random() * 0.3);
+          b.duration = elapsed + 1200 + Math.random() * 1800;
+        } else if (b.active && elapsed > b.duration) {
+          b.active = false;
+          b.multiplier = 1;
+          b.nextCheck = elapsed + 2000 + Math.random() * 3500;
+        }
       }
 
-      if (r.progress >= 100 && !firstFinisher) {
-        r.finished = true;
-        firstFinisher = r;
+      var speed = runnerSpeeds[i] * (b.active ? b.multiplier : 1);
+      var noise = (Math.sin(elapsed * 0.003 + i * 1.7) * 0.015);
+
+      runner.progress = Math.min(
+        1,
+        runner.progress + (rawProgress * 0.0018 * speed) + noise * 0.003
+      );
+
+      if (rawProgress >= 0.96) {
+        runner.progress = Math.min(1, runner.progress + 0.008 * speed);
+      }
+
+      if (runner.progress > maxProg) {
+        maxProg = runner.progress;
+        currentLeader = runner;
+      }
+
+      var trackAreaW = runner.trackArea ? runner.trackArea.clientWidth : 300;
+      var spriteW = (playerCount > 12 ? 32 : 42);
+      var maxLeftPx = Math.max(10, trackAreaW - spriteW);
+      var currentLeftPx = Math.min(maxLeftPx, Math.max(0, runner.progress * maxLeftPx));
+
+      if (runner.spriteEl) {
+        runner.spriteEl.style.left = currentLeftPx + 'px';
+      }
+
+      if (runner.progress >= 1 && !firstFinisher) {
+        runner.finished = true;
+        firstFinisher = runner;
       }
     });
 
-    // Atualiza Líder no topo
-    if (leaderBadge && currentLeader) {
+    if (currentLeader && leaderBadge) {
       var leaderPrefix = typeof t === 'function' ? t('race_leader_prefix') : '👑 Líder:';
       leaderBadge.textContent = leaderPrefix + ' ' + currentLeader.name;
+      leaderBadge.style.borderColor = currentLeader.color;
     }
 
-    // ─── AUTO-ROLAGEM VERTICAL NO LÍDER (Desktop & Mobile com muitos Lapras) ───
-    if (cameraViewport && currentLeader && currentLeader.laneEl) {
-      var laneTop = currentLeader.laneEl.offsetTop;
-      var laneH = currentLeader.laneEl.offsetHeight || 42;
-      var viewportH = cameraViewport.clientHeight;
-      var maxScrollTop = cameraViewport.scrollHeight - viewportH;
-      if (maxScrollTop > 0) {
-        var targetScrollY = Math.max(0, Math.min(maxScrollTop, (laneTop + laneH / 2) - (viewportH / 2)));
-        // Interpolação suave para a câmera acompanhar sem solavancos
-        cameraViewport.scrollTop += (targetScrollY - cameraViewport.scrollTop) * 0.08;
-      }
-    }
-
-    // ─── CÂMERA DINÂMICA HORIZONTAL NO LÍDER (MOBILE) ───
-    var isMobile = window.innerWidth <= 640;
-    if (isMobile && trackContainer && cameraViewport && currentLeader.trackArea) {
+    if (window.innerWidth <= 640 && currentLeader && trackContainer && cameraViewport) {
       var viewportW = cameraViewport.clientWidth;
-      var trackW    = trackContainer.offsetWidth || trackContainer.scrollWidth;
-      var maxPan    = Math.max(0, trackW - viewportW);
+      var trackW = trackContainer.scrollWidth || (viewportW * 2.5);
+      var maxTrackScroll = trackW - viewportW;
+      
+      var leaderX = currentLeader.progress * (trackW - 80);
+      var targetScroll = leaderX - (viewportW * 0.45);
+      var clampedScroll = Math.max(0, Math.min(maxTrackScroll, targetScroll));
 
-      var nameColW   = 90;
-      var trackAreaW = currentLeader.trackArea.clientWidth || (trackW - nameColW - 44);
-      var spriteW    = (playerCount > 12 ? 32 : 42);
+      trackContainer.style.transform = 'translateX(-' + clampedScroll + 'px)';
 
-      var leaderSpriteLeft = (currentLeader.progress / 100) * (trackAreaW - spriteW);
-      var leaderCenterX    = nameColW + leaderSpriteLeft + (spriteW / 2);
-
-      var targetCam = Math.max(0, Math.min(maxPan, leaderCenterX - (viewportW / 2)));
-      trackContainer.style.transform = 'translateX(' + (-targetCam) + 'px)';
-
-      // Indicadores de fora da tela
-      var viewLeft  = targetCam;
-      var viewRight = targetCam + viewportW;
-
-      var leftOut = [];
-      var rightOut = [];
+      var offLeft = [];
+      var offRight = [];
 
       raceRunners.forEach(function(r) {
-        var rSpriteLeft = (r.progress / 100) * (trackAreaW - spriteW);
-        var rCenterX    = nameColW + rSpriteLeft + (spriteW / 2);
-
-        if (rCenterX < viewLeft - 10) {
-          leftOut.push(r);
-        } else if (rCenterX > viewRight + 10) {
-          rightOut.push(r);
+        var rX = r.progress * (trackW - 80);
+        if (rX < clampedScroll - 20) {
+          offLeft.push(r);
+        } else if (rX > clampedScroll + viewportW + 10) {
+          offRight.push(r);
         }
       });
 
-      renderTrackers(trackerLeft, leftOut.slice(0, 5), 'left');
-      renderTrackers(trackerRight, rightOut.slice(0, 5), 'right');
-    } else {
-      if (trackContainer) trackContainer.style.transform = 'none';
-      if (trackerLeft) trackerLeft.innerHTML = '';
-      if (trackerRight) trackerRight.innerHTML = '';
+      renderTrackers(trackerLeft, offLeft, 'left');
+      renderTrackers(trackerRight, offRight, 'right');
     }
 
     if (firstFinisher) {
@@ -373,7 +494,17 @@ function renderTrackers(container, runners, side) {
 
 // ─── VENCEDOR ───
 function showWinner(winner) {
-  document.getElementById('winner-name-display').textContent = winner.name;
+  var nameEl = document.getElementById('winner-name-display');
+  if (nameEl) nameEl.textContent = winner.name;
+
+  var spriteEl = document.getElementById('winner-pokemon-sprite');
+  if (spriteEl && winner.pokemon) {
+    spriteEl.src = winner.pokemon.spriteUrl;
+    spriteEl.onerror = function() {
+      this.src = winner.pokemon.fallbackUrl;
+    };
+  }
+
   showRaceScreen('race-winner');
   spawnConfetti();
 }
@@ -414,6 +545,7 @@ function raceAgain() {
   clearInterval(countdownTimer);
   raceWinner = null;
   raceRunners.forEach(function(r) { r.progress = 0; r.finished = false; });
+  assignWaterPokemonToRunners();
   showRaceScreen('race-track');
   buildLanes();
   startCountdown(dur);
@@ -441,19 +573,23 @@ function raceAgainWithoutWinner() {
   cancelAnimationFrame(raceAnimId);
   clearInterval(countdownTimer);
 
+  var prefix = typeof t === 'function' ? t('race_participant_prefix') : 'Nadador';
   raceRunners = [];
   for (var i = 0; i < playerCount; i++) {
     raceRunners.push({
       id: i,
-      name: savedNames[i] || ('Lapras ' + (i + 1)),
+      name: savedNames[i] || (prefix + ' ' + (i + 1)),
       color: getLaneColor(i, playerCount),
       progress: 0,
       finished: false,
       spriteEl: null,
       trackArea: null,
-      laneEl: null
+      laneEl: null,
+      pokemon: null
     });
   }
+
+  assignWaterPokemonToRunners();
 
   raceWinner = null;
   showRaceScreen('race-track');

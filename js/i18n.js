@@ -21,7 +21,8 @@ var TRANSLATIONS = {
     card_timer_title: "Timer TCG",
     card_timer_desc: "Temporizador de partidas",
     card_timer_cta: "Acessar Timer →",
-    card_race_title: "Lapras Race",
+    // Swim Race
+    card_race_title: "Swim Race",
     card_race_desc: "Sorteio aleatório",
     card_race_cta: "Acessar Corrida →",
 
@@ -69,16 +70,16 @@ var TRANSLATIONS = {
     timer_pause: "Pausar",
     timer_reset: "🔄 Resetar",
 
-    // Lapras Race
-    race_title: "🌊 Lapras Race",
+    // Swim Race
+    race_title: "🏊 Swim Race",
     race_players_label: "👥 Participantes",
     race_players_unit: "jog",
     race_duration_label: "⏱️ Duração",
     race_duration_unit: "seg",
-    race_participant_prefix: "Lapras",
+    race_participant_prefix: "Nadador",
     race_participant_placeholder: "Nome do Participante",
     race_launch_btn: "🏁 Iniciar Corrida!",
-    race_running_title: "🌊 Corrida em Andamento!",
+    race_running_title: "🌊 Natação em Andamento!",
     race_leader_prefix: "👑 Líder:",
     race_abort_btn: "✕ Cancelar",
     race_winner_heading: "VENCEDOR!",
@@ -125,7 +126,7 @@ var TRANSLATIONS = {
     card_timer_title: "TCG Timer",
     card_timer_desc: "Match timer",
     card_timer_cta: "Open Timer →",
-    card_race_title: "Lapras Race",
+    card_race_title: "Swim Race",
     card_race_desc: "Random picker",
     card_race_cta: "Open Race →",
 
@@ -173,16 +174,16 @@ var TRANSLATIONS = {
     timer_pause: "Pause",
     timer_reset: "🔄 Reset",
 
-    // Lapras Race
-    race_title: "🌊 Lapras Race",
+    // Swim Race
+    race_title: "🏊 Swim Race",
     race_players_label: "👥 Participants",
     race_players_unit: "ply",
     race_duration_label: "⏱️ Duration",
     race_duration_unit: "sec",
-    race_participant_prefix: "Lapras",
+    race_participant_prefix: "Swimmer",
     race_participant_placeholder: "Participant Name",
     race_launch_btn: "🏁 Start Race!",
-    race_running_title: "🌊 Race in Progress!",
+    race_running_title: "🌊 Swimming Race in Progress!",
     race_leader_prefix: "👑 Leader:",
     race_abort_btn: "✕ Cancel",
     race_winner_heading: "WINNER!",
