@@ -158,17 +158,17 @@ function initPokemonRoamers() {
   animateRoamers();
 }
 
-function spawnRoamer() {
+function spawnRoamer(forceShiny, forcedPoke) {
   var container = document.getElementById('pokemon-roamer-container');
   if (!container || typeof pickRandomGen1Pokemon !== 'function') return;
 
-  var poke = pickRandomGen1Pokemon(activePokemonIds);
+  var poke = forcedPoke || pickRandomGen1Pokemon(activePokemonIds);
   if (!poke) return;
 
   activePokemonIds.add(poke.id);
 
-  // Chance de Shiny aumentada para 1 em 300 (perfeita para encontrar jogando!)
-  var isShiny = Math.random() < (1 / 300);
+  // Se forceShiny for true, é 100% Shiny! Caso contrário, chance normal (1 em 300)
+  var isShiny = forceShiny === true ? true : (Math.random() < (1 / 300));
 
   var goingRight = Math.random() > 0.5;
   var startX = goingRight ? -90 : window.innerWidth + 90;
@@ -243,6 +243,21 @@ function animateRoamers() {
 
   requestAnimationFrame(animateRoamers);
 }
+
+// ─── HELPER DE TESTE PARA O CONSOLE: GERAR SHINY ───
+window.spawnShiny = function(pokeParam) {
+  var forced = null;
+  if (typeof GEN1_POKEMON !== 'undefined') {
+    if (typeof pokeParam === 'number') {
+      forced = GEN1_POKEMON.find(function(p) { return p.id === pokeParam; });
+    } else if (typeof pokeParam === 'string' && pokeParam.trim() !== '') {
+      var query = pokeParam.trim().toLowerCase();
+      forced = GEN1_POKEMON.find(function(p) { return p.name.toLowerCase() === query; });
+    }
+  }
+  spawnRoamer(true, forced);
+  console.log('✨ Pokémon Shiny gerado com sucesso na tela!');
+};
 
 // ─── INICIALIZAÇÃO GERAL ───
 window.addEventListener('DOMContentLoaded', function() {
