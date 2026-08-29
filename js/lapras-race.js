@@ -185,7 +185,7 @@ function generateRaceNames() {
   }
 }
 
-// Atribui Pokémons aquáticos únicos (Gens 1, 2 e 3) e Shinies extras
+// Atribui Pokémons aquáticos únicos (Gens 1, 2 e 3) e Shinies APENAS se exceder o total de espécies (78)
 function assignWaterPokemonToRunners() {
   var shuffled = WATER_POKEMON_ROSTER.slice().sort(function() { return 0.5 - Math.random(); });
   
@@ -195,10 +195,9 @@ function assignWaterPokemonToRunners() {
 
     if (i < shuffled.length) {
       poke = shuffled[i];
-      // 5% de chance de variante shiny por pura emoção visual
-      isShiny = Math.random() < 0.05;
+      isShiny = false; // 100% normal até o 78º participante
     } else {
-      // Quando passar de 78 participantes, usa variantes Shinies dos mesmos aquáticos!
+      // Apenas se o número de participantes for maior que o total de aquáticos das 3 gerações (79 a 100)
       var baseIndex = (i - shuffled.length) % shuffled.length;
       poke = shuffled[baseIndex];
       isShiny = true;
