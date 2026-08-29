@@ -1,4 +1,4 @@
-﻿// pokemon-data.js — Tabela completa dos 151 Pokémons de Kanto (Gen 1) com Raridades
+// pokemon-data.js — Tabela completa dos 151 Pokémons de Kanto (Gen 1) com Raridades
 
 var GEN1_POKEMON = [
   // Tier 1: Muito Comum (Peso 50)
@@ -163,13 +163,13 @@ var GEN1_POKEMON = [
   { id: 151, name: 'mew', tier: 5 }
 ];
 
-// Pesos por Tier de raridade
+// Pesos por Tier de raridade (balanceados para encontros emocionantes!)
 var TIER_WEIGHTS = {
-  1: 50, // Muito Comum
-  2: 30, // Comum
-  3: 15, // Incomum
-  4: 4,  // Raro
-  5: 1   // Lendário / Mítico
+  1: 28, // Muito Comum
+  2: 20, // Comum
+  3: 10, // Incomum
+  4: 8,  // Raro (~13.6% dos spawns - 1 a cada 7)
+  5: 12  // Lendário / Mítico (~4% dos spawns - 1 a cada 25)
 };
 
 // Sorteia um Pokémon da Gen 1 respeitando os pesos de raridade
