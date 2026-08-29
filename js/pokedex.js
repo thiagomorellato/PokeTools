@@ -262,13 +262,16 @@ function renderPokedexGrid() {
     summaryEl.innerHTML = caughtLabel + ' <b>' + caughtCount + '/151</b> (' + pct + '%) &nbsp;|&nbsp; ' + shiniesLabel + ' <b>' + shinyCount + ' ✨</b>';
   }
 
-  GEN1_POKEMON.forEach(function(poke) {
+  // Ordena rigorosamente do #001 (Bulbasaur) ao #151 (Mew)
+  var sortedPokemon = GEN1_POKEMON.slice().sort(function(a, b) {
+    return a.id - b.id;
+  });
+
+  sortedPokemon.forEach(function(poke) {
     var caughtEntry = data[poke.id];
     var isCaught = !!caughtEntry;
     var isShiny = isCaught && caughtEntry.shiny;
 
-    if (currentPokedexFilter === 'caught' && !isCaught) return;
-    if (currentPokedexFilter === 'missing' && isCaught) return;
     if (currentPokedexFilter === 'shiny' && !isShiny) return;
 
     var numStr = '#' + String(poke.id).padStart(3, '0');
