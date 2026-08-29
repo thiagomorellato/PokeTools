@@ -163,42 +163,60 @@ var GEN1_POKEMON = [
   { id: 151, name: 'mew', tier: 5 }
 ];
 
-// Pesos por Tier calibrados matematicamente:
-// - Lendários/Míticos (Tier 5): exatamente 1 a cada 300 spawns (0.33%)
-// - Raros (Tier 4): exatamente 1 a cada 15 spawns (6.67%)
-var TIER_WEIGHTS = {
-  1: 26, // Muito Comum
-  2: 21, // Comum
-  3: 12, // Incomum
-  4: 4,  // Raro (~1 a cada 15 Pokémons)
-  5: 1   // Lendário / Mítico (~1 a cada 300 Pokémons)
-};
+// Porcentagens exatas por CATEGORIA de raridade na tela:
+// 1. Muito Comum: 45.0%
+// 2. Comum: 30.0%
+// 3. Incomum: 18.0%
+// 4. Raro: 6.67% (Exatamente 1 a cada 15)
+// 5. Lendário / Mítico: 0.333% (Exatamente 1 a cada 300)
+var TIER_PROBABILITIES = [
+  { tier: 5, chance: 1 / 300 },       // ~0.333%
+  { tier: 4, chance: 1 / 15 },        // ~6.667%
+  { tier: 3, chance: 0.18 },          // 18.0%
+  { tier: 2, chance: 0.30 },          // 30.0%
+  { tier: 1, chance: 0.45 }           // 45.0%
+];
 
-// Sorteia um Pokémon da Gen 1 respeitando os pesos de raridade
+// Sorteia primeiro a Raridade e depois o Pokémon dentro da categoria
 function pickRandomGen1Pokemon(excludeIds) {
-  var available = GEN1_POKEMON.filter(function(p) {
-    return !excludeIds.has(p.id);
-  });
+  var rand = Math.random();
+  var selectedTier = 1;
 
-  if (available.length === 0) {
-    available = GEN1_POKEMON;
+  // Sorteio por roleta cumulativa da categoria
+  var p5 = 1 / 300;
+  var p4 = p5 + (1 / 15);
+  var p3 = p4 + 0.18;
+  var p2 = p3 + 0.30;
+
+  if (rand < p5) {
+    selectedTier = 5;
+  } else if (rand < p4) {
+    selectedTier = 4;
+  } else if (rand < p3) {
+    selectedTier = 3;
+  } else if (rand < p2) {
+    selectedTier = 2;
+  } else {
+    selectedTier = 1;
   }
 
-  // Soma total de pesos
-  var totalWeight = 0;
-  available.forEach(function(p) {
-    totalWeight += (TIER_WEIGHTS[p.tier] || 10);
+  // Pega os Pokémons disponíveis do Tier sorteado
+  var pool = GEN1_POKEMON.filter(function(p) {
+    return p.tier === selectedTier && (!excludeIds || !excludeIds.has(p.id));
   });
 
-  var rand = Math.random() * totalWeight;
-  var accum = 0;
-
-  for (var i = 0; i < available.length; i++) {
-    accum += (TIER_WEIGHTS[available[i].tier] || 10);
-    if (rand <= accum) {
-      return available[i];
-    }
+  // Fallback caso todos daquele tier estejam na tela
+  if (pool.length === 0) {
+    pool = GEN1_POKEMON.filter(function(p) {
+      return p.tier === selectedTier;
+    });
   }
 
-  return available[0];
+  // Fallback geral de emergência
+  if (pool.length === 0) {
+    pool = GEN1_POKEMON;
+  }
+
+  var idx = Math.floor(Math.random() * pool.length);
+  return pool[idx];
 }
