@@ -160,6 +160,15 @@ function buildLanes() {
     trackArea.className = 'lane-track-area';
     trackArea.id = 'track-' + runner.id;
 
+    var runnerWrap = document.createElement('div');
+    runnerWrap.className = 'lapras-runner-wrap' + (isCompact ? ' compact-runner-wrap' : '');
+    runnerWrap.id = 'runner-' + runner.id;
+
+    var floatingName = document.createElement('span');
+    floatingName.className = 'lapras-floating-name';
+    floatingName.textContent = runner.name;
+    floatingName.style.color = runner.color;
+
     var sprite = document.createElement('img');
     sprite.className = 'lapras-sprite' + (isCompact ? ' compact-sprite' : '');
     sprite.alt = 'Lapras';
@@ -169,13 +178,16 @@ function buildLanes() {
       this.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png';
     };
 
-    trackArea.appendChild(sprite);
+    runnerWrap.appendChild(floatingName);
+    runnerWrap.appendChild(sprite);
+    trackArea.appendChild(runnerWrap);
+
     lane.appendChild(nameCol);
     lane.appendChild(trackArea);
     container.appendChild(lane);
 
     runner.laneEl    = lane;
-    runner.spriteEl  = sprite;
+    runner.spriteEl  = runnerWrap;
     runner.trackArea = trackArea;
   });
 }

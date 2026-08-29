@@ -686,11 +686,11 @@ input {
   color: var(--text-main);
 }
 .lang-btn.active {
-  background: rgba(247, 201, 72, 0.18);
+  background: var(--yellow);
   border-color: var(--yellow);
-  color: var(--yellow);
+  color: #111827;
   font-weight: 900;
-  box-shadow: 0 0 12px rgba(247, 201, 72, 0.25);
+  box-shadow: 0 2px 12px rgba(247, 201, 72, 0.4);
 }
 
 /* ─── SECTIONS BASE ─── */
@@ -1310,14 +1310,38 @@ input {
   gap: 0.6rem;
 }
 .leader-badge {
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 800;
   color: var(--yellow);
-  background: rgba(247,201,72,0.15);
-  border: 1.5px solid rgba(247,201,72,0.3);
-  padding: 0.3rem 0.65rem;
+  background: var(--input-bg);
+  border: 1.5px solid var(--card-border);
+  padding: 0.45rem 0.85rem;
   border-radius: var(--btn-radius);
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-abort {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-main);
+  background: var(--input-bg);
+  border: 1.5px solid var(--card-border);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-abort:hover {
+  background: rgba(230, 57, 70, 0.2);
+  border-color: var(--red);
+  color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(230, 57, 70, 0.25);
 }
 
 .race-camera-viewport {
@@ -1353,13 +1377,13 @@ input {
 .race-lane {
   display: flex;
   align-items: center;
-  height: 58px;
+  height: 64px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   padding-right: 50px;
   box-sizing: border-box;
 }
 .race-lane.compact-lane {
-  height: 42px;
+  height: 48px;
 }
 .race-lane:last-child { border-bottom: none; }
 
@@ -1380,26 +1404,59 @@ input {
 .lane-track-area {
   flex: 1;
   position: relative;
-  height: 48px;
+  height: 52px;
   border-radius: 8px;
   background: rgba(0,0,0,0.1);
 }
 .compact-lane .lane-track-area {
-  height: 34px;
+  height: 40px;
+}
+
+/* Container do Lapras com Nome Flutuante em Cima */
+.lapras-runner-wrap {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  pointer-events: none;
+  will-change: left;
+  z-index: 10;
+}
+
+.lapras-floating-name {
+  font-family: var(--font-pixel);
+  font-size: 0.48rem;
+  font-weight: 900;
+  white-space: nowrap;
+  margin-bottom: 1px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 5px #000;
+  background: rgba(10, 20, 30, 0.65);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  line-height: 1.1;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.compact-runner-wrap .lapras-floating-name {
+  font-size: 0.4rem;
+  padding: 0.05rem 0.25rem;
+  margin-bottom: 0px;
 }
 
 .lapras-sprite {
-  position: absolute;
-  top: 50%;
-  left: 0%;
-  transform: translateY(-50%) scaleX(-1);
-  height: 42px;
+  height: 38px;
   width: auto;
   image-rendering: pixelated;
-  z-index: 4;
+  transform: scaleX(-1);
 }
 .lapras-sprite.compact-sprite {
-  height: 30px;
+  height: 26px;
 }
 
 .finish-line-col {
