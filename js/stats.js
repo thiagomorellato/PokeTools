@@ -76,21 +76,22 @@ function recordCatchAttempt(poke, isShiny, success) {
   saveStatsData(stats);
 }
 
-// ─── MODAL DE ESTATÍSTICAS ───
+// ─── VISUALIZAÇÃO DE ESTATÍSTICAS NA POKÉDEX ───
 function openStatsModal() {
-  var modal = document.getElementById('stats-modal');
-  if (!modal) return;
-  modal.classList.remove('hidden');
-  renderStatsModal();
+  if (typeof openPokedexModal === 'function') {
+    openPokedexModal();
+    setPokedexFilter('stats');
+  }
 }
 
 function closeStatsModal() {
-  var modal = document.getElementById('stats-modal');
-  if (modal) modal.classList.add('hidden');
+  if (typeof closePokedexModal === 'function') {
+    closePokedexModal();
+  }
 }
 
-function renderStatsModal() {
-  var container = document.getElementById('stats-modal-body');
+function renderStatsView(targetContainer) {
+  var container = targetContainer || document.getElementById('pokedex-stats-view');
   if (!container) return;
 
   var stats = getStatsData();

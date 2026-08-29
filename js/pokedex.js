@@ -207,13 +207,13 @@ function processNextToast() {
 }
 
 // ─── MODAL DA POKÉDEX (151 POKÉMONS COM SOMBRAS) ───
-var currentPokedexFilter = 'all'; // 'all' | 'caught' | 'missing' | 'shiny'
+var currentPokedexFilter = 'all'; // 'all' | 'shiny' | 'stats'
 
 function openPokedexModal() {
   var modal = document.getElementById('pokedex-modal');
   if (!modal) return;
   modal.classList.remove('hidden');
-  renderPokedexGrid();
+  setPokedexFilter(currentPokedexFilter === 'stats' ? 'stats' : currentPokedexFilter);
 }
 
 function closePokedexModal() {
@@ -226,7 +226,23 @@ function setPokedexFilter(filter) {
   document.querySelectorAll('.pokedex-tab-btn').forEach(function(b) {
     b.classList.toggle('active', b.getAttribute('data-filter') === filter);
   });
-  renderPokedexGrid();
+
+  var grid = document.getElementById('pokedex-grid');
+  var statsView = document.getElementById('pokedex-stats-view');
+
+  if (filter === 'stats') {
+    if (grid) grid.style.display = 'none';
+    if (statsView) {
+      statsView.style.display = 'block';
+      if (typeof renderStatsView === 'function') {
+        renderStatsView(statsView);
+      }
+    }
+  } else {
+    if (grid) grid.style.display = 'grid';
+    if (statsView) statsView.style.display = 'none';
+    renderPokedexGrid();
+  }
 }
 
 function renderPokedexGrid() {
