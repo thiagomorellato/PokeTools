@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PokéTools — Timer TCG, Lapras Race & Pokédex</title>
+  <meta name="description" content="Ferramentas temáticas de Pokémon: Timer para TCG, Lapras Race e Pokédex dos 151 de Kanto com minigame de captura!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Camada de Pokémons Andando no Fundo -->
+  <div id="pokemon-roamer-container" class="pokemon-roamer-layer"></div>
+
+  <!-- ═══════ NAVBAR ═══════ -->
+  <nav class="navbar" id="main-navbar">
+    <div class="nav-brand" onclick="navigateTo('home')">
+      <div class="pokeball-icon">
+        <div class="pb-top"></div>
+        <div class="pb-band"></div>
+        <div class="pb-bottom"></div>
+        <div class="pb-center"></div>
+      </div>
+      <span class="brand-text">PokéTools</span>
+    </div>
+    
+    <div class="nav-right-group">
+      <!-- Botão da Pokédex (Ícone + Número embaixo) -->
+      <button class="pokedex-icon-btn" onclick="openPokedexModal()" title="Abrir Pokédex de Kanto" data-i18n-title="pokedex_modal_title">
+        <div class="pokedex-device-icon">
+          <div class="dex-lens"></div>
+          <div class="dex-dots">
+            <span class="d-dot d-red"></span>
+            <span class="d-dot d-yellow"></span>
+            <span class="d-dot d-green"></span>
+          </div>
+          <div class="dex-screen-line"></div>
+        </div>
+        <span class="pokedex-badge" id="pokedex-count-badge">0/151</span>
+      </button>
+
+      <!-- Botão do Menu (Home, Tema e Idioma) -->
+      <button class="nav-menu-btn" id="nav-menu-btn" onclick="toggleMenu()" title="Menu e Configurações">
+        <span class="menu-burger-icon">☰</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════ MENU DRAWER / MODAL ═══════ -->
+  <div id="menu-modal" class="menu-modal-overlay hidden" onclick="closeMenuOnBackdrop(event)">
+    <div class="menu-drawer glass-card">
+      <div class="menu-drawer-header">
+        <div class="menu-drawer-title">
+          <span class="menu-header-icon">⚙️</span>
+          <span data-i18n="nav_menu_title">Menu & Opções</span>
+        </div>
+        <button class="menu-close-btn" onclick="toggleMenu()" title="Fechar">✕</button>
+      </div>
+
+      <div class="menu-section-group">
+        <!-- Navegação Home -->
+        <button class="menu-item-btn" onclick="navigateToHomeFromMenu()">
+          <span class="menu-item-icon">🏠</span>
+          <span class="menu-item-text" data-i18n="nav_home">Início</span>
+        </button>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <!-- Seção de Aparência / Tema -->
+      <div class="menu-section-block">
+        <label class="menu-section-label" data-i18n="theme_label">Aparência</label>
+        <button class="menu-toggle-theme-btn" id="menu-theme-btn" onclick="toggleDayNightMode()">
+          <span id="theme-toggle-icon">☀️</span>
+          <span id="theme-toggle-text" data-i18n="theme_light">Modo Claro ☀️</span>
+        </button>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <!-- Seção de Idioma / Language -->
+      <div class="menu-section-block">
+        <label class="menu-section-label" data-i18n="lang_label">Idioma / Language</label>
+        <div class="lang-selector-row">
+          <button class="lang-btn active" data-lang="pt" onclick="setLanguage('pt')">
+            🇧🇷 Português
+          </button>
+          <button class="lang-btn" data-lang="en" onclick="setLanguage('en')">
+            🇺🇸 English
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════ HOME ═══════ -->
+  <section id="section-home" class="section active-section">
+    <div class="home-hero">
+      <canvas id="particle-canvas" class="particle-canvas"></canvas>
+      <div class="hero-content">
+        <h1 class="hero-title">PokéTools</h1>
+        <p class="hero-subtitle" data-i18n="home_subtitle">Ferramentas temáticas para suas partidas e torneios!</p>
+        <div class="feature-cards">
+          <div class="feature-card" id="card-timer" onclick="navigateTo('timer')">
+            <div class="card-glow-orb"></div>
+            <div class="card-icon-large">⏱️</div>
+            <h2 class="card-title" data-i18n="card_timer_title">Timer TCG</h2>
+            <p class="card-desc" data-i18n="card_timer_desc">Temporizador de partidas</p>
+            <div class="card-cta" data-i18n="card_timer_cta">Acessar Timer →</div>
+          </div>
+          <div class="feature-card card-blue" id="card-race" onclick="navigateTo('race')">
+            <div class="card-glow-orb"></div>
+            <div class="card-icon-large">🌊</div>
+            <h2 class="card-title" data-i18n="card_race_title">Lapras Race</h2>
+            <p class="card-desc" data-i18n="card_race_desc">Sorteio aleatório</p>
+            <div class="card-cta" data-i18n="card_race_cta">Acessar Corrida →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ TIMER (FLUXO EM 3 ETAPAS) ═══════ -->
+  <section id="section-timer" class="section">
+    <div class="timer-viewport-wrapper">
+
+      <!-- ETAPA 1: ESCOLHA DO MODO -->
+      <div id="timer-step-1" class="timer-step-screen active-step">
+        <div class="step-header">
+          <h1 class="section-title" data-i18n="timer_choose_mode">⏱️ Escolha o Modo do Timer</h1>
+          <p class="step-desc" data-i18n="timer_mode_subtitle">Selecione como deseja utilizar o cronômetro na sua mesa</p>
+        </div>
+
+        <div class="mode-cards-grid">
+          <!-- Modo Geral -->
+          <div class="mode-card" onclick="selectTimerMode('general')">
+            <div class="mode-icon">⏳</div>
+            <h2 class="mode-title" data-i18n="timer_general_title">Timer Geral</h2>
+            <p class="mode-desc" data-i18n="timer_general_desc">Ideal para mesas com 4+ jogadores, torneios ou múltiplas partidas usando o mesmo relógio.</p>
+            <div class="mode-tag" data-i18n="timer_general_tag">Sem nomes de jogadores</div>
+            <button class="btn btn-yellow btn-mode-action" data-i18n="timer_general_btn">Selecionar Modo Geral →</button>
+          </div>
+
+          <!-- Modo VS -->
+          <div class="mode-card mode-card-vs" onclick="selectTimerMode('vs')">
+            <div class="mode-icon">⚔️</div>
+            <h2 class="mode-title" data-i18n="timer_vs_title">Partida VS (1v1)</h2>
+            <p class="mode-desc" data-i18n="timer_vs_desc">Partida direta entre 2 jogadores com placar e nomes personalizados na tela.</p>
+            <div class="mode-tag tag-vs" data-i18n="timer_vs_tag">Com Jogador 1 vs Jogador 2</div>
+            <button class="btn btn-yellow btn-mode-action" data-i18n="timer_vs_btn">Selecionar Modo VS →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ETAPA 2: CONFIGURAÇÃO (TEMPO / NOMES) -->
+      <div id="timer-step-2" class="timer-step-screen">
+        <div class="step-header">
+          <div class="step-nav-row">
+            <button class="btn-step-back" onclick="goToTimerStep(1)" data-i18n="timer_back">← Voltar</button>
+          </div>
+          <h1 class="section-title" id="step-2-title" data-i18n="timer_setup_general_title">⏳ Configuração do Tempo (Mesa Geral)</h1>
+        </div>
+
+        <div class="glass-card config-panel-card">
+          <!-- Bloco de Jogadores (Só no modo VS) -->
+          <div id="vs-names-section" class="vs-inputs-container">
+            <div class="player-setup-row">
+              <div class="player-setup-block">
+                <label class="player-label p1-color" data-i18n="timer_p1_label">🔵 Jogador 1</label>
+                <input type="text" id="player1-name" class="player-name-input p1-focus" placeholder="Nome do Jogador 1" data-i18n-placeholder="timer_p1_placeholder" maxlength="18" value="Jogador 1">
+              </div>
+              <div class="vs-divider"><span class="vs-text">VS</span></div>
+              <div class="player-setup-block">
+                <label class="player-label p2-color" data-i18n="timer_p2_label">🔴 Jogador 2</label>
+                <input type="text" id="player2-name" class="player-name-input p2-focus" placeholder="Nome do Jogador 2" data-i18n-placeholder="timer_p2_placeholder" maxlength="18" value="Jogador 2">
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuração de Tempo -->
+          <div class="time-config-section">
+            <label class="time-setup-label" data-i18n="timer_time_label">⏰ Defina o Tempo da Rodada</label>
+            
+            <!-- Presets rápidos -->
+            <div class="time-presets-row">
+              <button class="preset-chip" onclick="setTimePreset(0, 50, 0)" data-i18n="preset_50">50 min (Oficial)</button>
+              <button class="preset-chip" onclick="setTimePreset(0, 30, 0)" data-i18n="preset_30">30 min</button>
+              <button class="preset-chip" onclick="setTimePreset(0, 20, 0)" data-i18n="preset_20">20 min</button>
+              <button class="preset-chip" onclick="setTimePreset(0, 10, 0)" data-i18n="preset_10">10 min</button>
+            </div>
+
+            <div class="time-inputs-group">
+              <div class="time-field">
+                <input type="number" id="input-hours" class="time-number" min="0" max="23" value="0">
+                <span class="time-field-label" data-i18n="time_hours">Horas</span>
+              </div>
+              <span class="time-colon">:</span>
+              <div class="time-field">
+                <input type="number" id="input-minutes" class="time-number" min="0" max="59" value="50">
+                <span class="time-field-label" data-i18n="time_min">Min</span>
+              </div>
+              <span class="time-colon">:</span>
+              <div class="time-field">
+                <input type="number" id="input-seconds" class="time-number" min="0" max="59" value="0">
+                <span class="time-field-label" data-i18n="time_sec">Seg</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ação para ir para o timer -->
+          <button class="btn btn-yellow btn-full-width" onclick="proceedToActiveTimer()" data-i18n="timer_proceed_btn">
+            Ir para o Timer ⏱️ →
+          </button>
+        </div>
+      </div>
+
+      <!-- ETAPA 3: TELA DO TIMER ATIVO (LIMPO) -->
+      <div id="timer-step-3" class="timer-step-screen">
+        <div class="active-timer-container">
+          
+          <!-- Top Bar com status/modo, turnos e botões rápidos -->
+          <div class="active-timer-topbar">
+            <button class="btn-timer-config" onclick="goToTimerStep(2)" title="Ajustar tempo ou nomes" data-i18n="timer_adjust">
+              ⚙️ Ajustar
+            </button>
+            
+            <div class="timer-meta-center">
+              <div id="active-mode-badge" class="active-badge">⏳ Modo Geral</div>
+              <div class="turn-counter-badge" onclick="advanceTurn()" title="Clique para avançar o turno">
+                <span id="turn-label-text">Turno</span> <span id="turn-number">1</span> 🔄
+              </div>
+            </div>
+
+            <button class="btn-timer-reset-quick" onclick="timerReset()" title="Resetar Timer" data-i18n="timer_reset_quick">
+              🔄 Resetar
+            </button>
+          </div>
+
+          <!-- Banner VS (se estiver no modo VS) -->
+          <div id="active-vs-banner" class="active-vs-banner">
+            <div class="vs-badge-p1" id="banner-p1">Jogador 1</div>
+            <div class="vs-badge-middle">VS</div>
+            <div class="vs-badge-p2" id="banner-p2">Jogador 2</div>
+          </div>
+
+          <!-- Relógio Principal Limpo -->
+          <div class="timer-clock-wrap" id="timer-clock-wrap">
+            <div class="clock-ring-outer">
+              <svg class="clock-svg" viewBox="0 0 240 240">
+                <circle class="clock-track" cx="120" cy="120" r="105"/>
+                <circle class="clock-progress" id="clock-progress" cx="120" cy="120" r="105"/>
+              </svg>
+              <div class="clock-face">
+                <div class="timer-digits" id="timer-digits">50:00</div>
+                <div class="timer-status-text" id="timer-status">Pronto!</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controles Principais -->
+          <div class="timer-controls-row">
+            <button class="btn btn-yellow btn-timer-main" id="btn-play-pause" onclick="timerToggle()">
+              <span id="play-icon">▶</span>
+              <span id="play-text">Iniciar</span>
+            </button>
+            <button class="btn btn-ghost btn-timer-sub" id="btn-reset" onclick="timerReset()">
+              🔄 Resetar
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════ RACE ═══════ -->
+  <section id="section-race" class="section">
+
+    <!-- Setup Screen -->
+    <div id="race-setup" class="race-screen">
+      <h1 class="section-title" data-i18n="race_title">🌊 Lapras Race</h1>
+
+      <div class="glass-card race-config-card">
+        <div class="race-config-row">
+          <div class="config-block">
+            <label class="config-label" data-i18n="race_players_label">👥 Participantes</label>
+            <div class="number-spinner">
+              <button class="spinner-btn" id="players-minus-btn" onclick="adjustPlayers(-1)" title="Diminuir 1">−</button>
+              <div class="duration-wrap">
+                <input type="number" id="race-player-count" class="duration-input" min="2" max="100" value="4" oninput="onPlayerInputChanged(this.value)" onblur="onPlayerInputBlur(this)">
+                <span class="duration-unit" data-i18n="race_players_unit">jog</span>
+              </div>
+              <button class="spinner-btn" id="players-plus-btn" onclick="adjustPlayers(1)" title="Aumentar 1">+</button>
+            </div>
+          </div>
+          <div class="config-block">
+            <label class="config-label" data-i18n="race_duration_label">⏱️ Duração</label>
+            <div class="number-spinner">
+              <button class="spinner-btn" onclick="adjustRaceDuration(-1)" title="Diminuir 1s">−</button>
+              <div class="duration-wrap">
+                <input type="number" id="race-duration" class="duration-input" min="5" max="600" value="20">
+                <span class="duration-unit" data-i18n="race_duration_unit">seg</span>
+              </div>
+              <button class="spinner-btn" onclick="adjustRaceDuration(1)" title="Aumentar 1s">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="race-names-grid" id="race-names-grid">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+
+        <button class="btn btn-yellow btn-race-launch" onclick="launchRace()" data-i18n="race_launch_btn">
+          🏁 Iniciar Corrida!
+        </button>
+      </div>
+    </div>
+
+    <!-- Track Screen com Câmera Dinâmica e Indicadores Off-screen -->
+    <div id="race-track" class="race-screen hidden">
+      <div class="track-header">
+        <h2 class="track-title" data-i18n="race_running_title">🌊 Corrida em Andamento!</h2>
+        <div class="track-header-right">
+          <span class="leader-badge" id="leader-badge">👑 Líder: ---</span>
+          <button class="btn-abort" onclick="abortRace()" data-i18n="race_abort_btn">✕ Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Viewport da Câmera (No mobile dá zoom e pan) -->
+      <div class="race-camera-viewport" id="race-camera-viewport">
+        
+        <!-- Indicadores de Lapras fora da tela (Mobile) -->
+        <div class="offscreen-tracker tracker-left" id="tracker-left"></div>
+        <div class="offscreen-tracker tracker-right" id="tracker-right"></div>
+
+        <!-- Pista de Corrida -->
+        <div class="race-track-container" id="race-track-container">
+          <!-- Water Background -->
+          <div class="water-bg">
+            <div class="water-wave wv1"></div>
+            <div class="water-wave wv2"></div>
+            <div class="water-wave wv3"></div>
+            <div class="water-shimmer"></div>
+          </div>
+          <!-- Lanes -->
+          <div class="race-lanes" id="race-lanes"></div>
+          <!-- Finish Line -->
+          <div class="finish-line-col">
+            <div class="finish-flag-top">🏁</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Countdown Overlay -->
+      <div class="countdown-overlay hidden" id="countdown-overlay">
+        <div class="countdown-number" id="countdown-display">3</div>
+      </div>
+    </div>
+
+    <!-- Winner Screen -->
+    <div id="race-winner" class="race-screen hidden">
+      <div id="confetti-container" class="confetti-container"></div>
+      <div class="winner-card">
+        <div class="winner-trophy">🏆</div>
+        <h2 class="winner-heading" data-i18n="race_winner_heading">VENCEDOR!</h2>
+        <div class="winner-name-display" id="winner-name-display">---</div>
+        <div class="winner-lapras-wrap">
+          <img
+            src="https://play.pokemonshowdown.com/sprites/ani/lapras.gif"
+            alt="Lapras Campeão"
+            class="winner-lapras-sprite"
+            onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png'"
+          >
+        </div>
+        <div class="winner-actions">
+          <button class="btn btn-yellow" onclick="raceAgain()" data-i18n="race_again_btn">🔄 Correr Novamente</button>
+          <button class="btn btn-blue" onclick="raceAgainWithoutWinner()" data-i18n="race_again_no_winner_btn">🚫 Correr Sem o Vencedor</button>
+          <button class="btn btn-ghost" onclick="backToRaceSetup()" data-i18n="race_new_config_btn">⚙️ Nova Config</button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════ MODAL POKÉDEX (151 DE KANTO) ═══════ -->
+  <div id="pokedex-modal" class="pokedex-modal-overlay hidden">
+    <div class="pokedex-device">
+      
+      <!-- Cabeçalho Pokédex -->
+      <div class="pokedex-top-bar">
+        <div class="pokedex-lights">
+          <div class="pokedex-main-lens"></div>
+          <div class="pokedex-mini-light light-red"></div>
+          <div class="pokedex-mini-light light-yellow"></div>
+          <div class="pokedex-mini-light light-green"></div>
+        </div>
+        <div class="pokedex-title-box">
+          <span class="pokedex-kanto-title" data-i18n="pokedex_modal_title">POKÉDEX KANTO (151)</span>
+        </div>
+        <button class="pokedex-close-btn" onclick="closePokedexModal()" title="Fechar Pokédex">✕</button>
+      </div>
+
+      <!-- Resumo & Abas de Filtros -->
+      <div class="pokedex-controls-panel">
+        <div class="pokedex-summary-text" id="pokedex-summary-text">
+          Capturados: <b>0/151</b> (0%) | Shinies: <b>0 ✨</b>
+        </div>
+        <div class="pokedex-tabs-row">
+          <button class="pokedex-tab-btn active" data-filter="all" onclick="setPokedexFilter('all')" data-i18n="filter_all">Todos (151)</button>
+          <button class="pokedex-tab-btn" data-filter="caught" onclick="setPokedexFilter('caught')" data-i18n="filter_caught">Capturados</button>
+          <button class="pokedex-tab-btn" data-filter="missing" onclick="setPokedexFilter('missing')" data-i18n="filter_missing">Faltantes</button>
+          <button class="pokedex-tab-btn" data-filter="shiny" onclick="setPokedexFilter('shiny')" data-i18n="filter_shiny">Shinies ✨</button>
+        </div>
+      </div>
+
+      <!-- Tela LCD da Pokédex com os 151 Slots -->
+      <div class="pokedex-screen-bezel">
+        <div class="pokedex-lcd-grid" id="pokedex-grid">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/pokemon-data.js"></script>
+  <script src="js/pokedex.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/lapras-race.js"></script>
+</body>
+</html>
