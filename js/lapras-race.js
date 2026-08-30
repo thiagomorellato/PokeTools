@@ -366,8 +366,6 @@ function runRace(durationSec) {
 
   var trackContainer = document.getElementById('race-track-container');
   var cameraViewport = document.getElementById('race-camera-viewport');
-  var trackerLeft    = document.getElementById('tracker-left');
-  var trackerRight   = document.getElementById('tracker-right');
   var leaderBadge    = document.getElementById('leader-badge');
 
   function animate(now) {
@@ -412,7 +410,7 @@ function runRace(durationSec) {
       }
 
       var trackAreaW = runner.trackArea ? runner.trackArea.clientWidth : 300;
-      var spriteW = (playerCount > 12 ? 32 : 42);
+      var spriteW = (playerCount > 12 ? 28 : 36);
       var maxLeftPx = Math.max(10, trackAreaW - spriteW);
       var currentLeftPx = Math.min(maxLeftPx, Math.max(0, runner.progress * maxLeftPx));
 
@@ -446,23 +444,6 @@ function runRace(durationSec) {
   }
 
   raceAnimId = requestAnimationFrame(animate);
-}
-
-function renderTrackers(container, runners, side) {
-  if (!container) return;
-  container.innerHTML = '';
-  runners.forEach(function(r) {
-    var tag = document.createElement('div');
-    tag.className = 'offscreen-tag';
-    tag.style.borderColor = r.color;
-    tag.style.borderLeftColor = r.color;
-    if (side === 'left') {
-      tag.textContent = '⬅ ' + r.name;
-    } else {
-      tag.textContent = r.name + ' ➡';
-    }
-    container.appendChild(tag);
-  });
 }
 
 // ─── VENCEDOR ───
