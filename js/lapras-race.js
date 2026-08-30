@@ -368,7 +368,12 @@ function runRace(durationSec) {
   var cameraViewport = document.getElementById('race-camera-viewport');
   var leaderBadge    = document.getElementById('leader-badge');
 
+  var lastTime = performance.now();
+
   function animate(now) {
+    var dt = Math.min((now - lastTime) / 1000, 0.1);
+    lastTime = now;
+
     var elapsed = now - startTime;
     var rawProgress = Math.min(elapsed / durationMs, 1);
 
@@ -376,33 +381,33 @@ function runRace(durationSec) {
     var maxProg = -1;
     var currentLeader = null;
 
+    // Velocidade base para completar a pista no tempo estipulado
+    var baseRate = 1 / durationSec;
+
     raceRunners.forEach(function(runner, i) {
       if (runner.finished) return;
 
       var b = bursts[i];
       if (elapsed > b.nextCheck) {
-        if (!b.active && Math.random() < 0.35) {
+        if (!b.active && Math.random() < 0.40) {
           b.active = true;
-          b.multiplier = (Math.random() < 0.65) ? (1.5 + Math.random() * 0.8) : (0.4 + Math.random() * 0.3);
-          b.duration = elapsed + 1200 + Math.random() * 1800;
+          // Arrancada suave ou pequeno cansaço momentâneo
+          b.multiplier = (Math.random() < 0.60) ? (1.35 + Math.random() * 0.4) : (0.70 + Math.random() * 0.2);
+          b.duration = elapsed + 1000 + Math.random() * 1600;
         } else if (b.active && elapsed > b.duration) {
           b.active = false;
           b.multiplier = 1;
-          b.nextCheck = elapsed + 2000 + Math.random() * 3500;
+          b.nextCheck = elapsed + 1800 + Math.random() * 3000;
         }
       }
 
-      var speed = runnerSpeeds[i] * (b.active ? b.multiplier : 1);
-      var noise = (Math.sin(elapsed * 0.003 + i * 1.7) * 0.015);
+      var speedMult = runnerSpeeds[i] * (b.active ? b.multiplier : 1);
+      var microWave = Math.sin(elapsed * 0.004 + i * 2.1) * 0.06;
 
       runner.progress = Math.min(
         1,
-        runner.progress + (rawProgress * 0.0018 * speed) + noise * 0.003
+        runner.progress + (baseRate * (speedMult + microWave) * dt)
       );
-
-      if (rawProgress >= 0.96) {
-        runner.progress = Math.min(1, runner.progress + 0.008 * speed);
-      }
 
       if (runner.progress > maxProg) {
         maxProg = runner.progress;
