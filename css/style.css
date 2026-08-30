@@ -1419,47 +1419,62 @@ input {
   left: 0;
   width: 200%;
   height: 100%;
-  opacity: 0.8;
-  background-repeat: repeat-x;
+  pointer-events: none;
 }
 
 .water-wave.wv1 {
-  background: radial-gradient(ellipse 320px 60px at 50% 50%, var(--swim-wave-1) 0%, transparent 80%);
-  background-size: 260px 100%;
-  animation: wave-slide 8s linear infinite;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 18px,
+    var(--swim-wave-1) 18px,
+    var(--swim-wave-1) 36px
+  );
+  animation: wave-flow 5s linear infinite;
+  opacity: 0.75;
 }
 
 .water-wave.wv2 {
-  background: radial-gradient(ellipse 260px 45px at 50% 50%, var(--swim-wave-2) 0%, transparent 75%);
-  background-size: 200px 100%;
-  animation: wave-slide 5.5s linear infinite reverse;
-  opacity: 0.7;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 24px,
+    var(--swim-wave-2) 24px,
+    var(--swim-wave-2) 48px
+  );
+  animation: wave-flow-reverse 7s linear infinite;
+  opacity: 0.85;
 }
 
 .water-wave.wv3 {
-  background: linear-gradient(90deg, transparent, var(--swim-wave-1), transparent);
-  background-size: 160px 100%;
-  animation: wave-slide 11s linear infinite;
-  opacity: 0.45;
+  background: radial-gradient(ellipse 200px 50px at 50% 50%, var(--swim-wave-1) 0%, transparent 75%);
+  background-size: 200px 70px;
+  animation: wave-flow 9s linear infinite;
+  opacity: 0.6;
 }
 
 .water-shimmer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, transparent 20%, var(--swim-shimmer) 50%, transparent 80%);
-  background-size: 300% 300%;
-  animation: shimmer-water 6s ease infinite;
+  background: linear-gradient(125deg, transparent 25%, var(--swim-shimmer) 50%, transparent 75%);
+  background-size: 250% 250%;
+  animation: shimmer-water 4.5s ease-in-out infinite;
 }
 
-@keyframes wave-slide {
+@keyframes wave-flow {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
+@keyframes wave-flow-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
 @keyframes shimmer-water {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
 }
 
 .race-lanes {
@@ -2125,17 +2140,17 @@ input {
   }
   
   .race-track-container {
-    width: 100% !important;
-    min-width: 0 !important;
-    transform: none !important;
+    width: 220% !important;
+    min-width: 750px !important;
+    will-change: transform;
   }
   
-  .lane-name-col { width: 68px; min-width: 68px; font-size: 0.60rem; padding: 0 0.25rem; }
-  .race-lane { height: 50px; padding-right: 30px; }
-  .compact-lane { height: 42px; }
-  .lapras-sprite { height: 32px; max-width: 32px; }
+  .lane-name-col { width: 75px; min-width: 75px; font-size: 0.65rem; padding: 0 0.3rem; }
+  .race-lane { height: 52px; padding-right: 38px; }
+  .compact-lane { height: 44px; }
+  .lapras-sprite { height: 34px; max-width: 34px; }
   .compact-sprite { height: 26px; max-width: 26px; }
-  .lapras-floating-name { font-size: 0.42rem; padding: 0.06rem 0.22rem; }
+  .lapras-floating-name { font-size: 0.44rem; padding: 0.08rem 0.28rem; }
   
   .timer-controls-row { flex-direction: column; }
   .btn-timer-main, .btn-timer-sub { width: 100%; }

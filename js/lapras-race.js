@@ -431,6 +431,20 @@ function runRace(durationSec) {
       leaderBadge.style.borderColor = currentLeader.color;
     }
 
+    // Câmera dinâmica de perseguição no mobile: avança com o líder até o final
+    if (window.innerWidth <= 640 && currentLeader && trackContainer && cameraViewport) {
+      var viewportW = cameraViewport.clientWidth;
+      var trackW = trackContainer.scrollWidth || (viewportW * 2.2);
+      var maxTrackScroll = Math.max(0, trackW - viewportW);
+
+      var laneTrackW = currentLeader.trackArea ? currentLeader.trackArea.clientWidth : (trackW - 75);
+      var leaderX = 75 + (currentLeader.progress * (laneTrackW - 35));
+      var targetScroll = leaderX - (viewportW * 0.45);
+      var clampedScroll = Math.max(0, Math.min(maxTrackScroll, targetScroll));
+
+      trackContainer.style.transform = 'translateX(-' + clampedScroll + 'px)';
+    }
+
     if (firstFinisher) {
       raceWinner = firstFinisher;
       var trackAreaW = firstFinisher.trackArea.clientWidth || 300;
