@@ -223,9 +223,9 @@ function setLanguage(lang) {
   currentLang = (lang === 'en') ? 'en' : 'pt';
   localStorage.setItem('poketools_lang', currentLang);
   applyTranslations();
-  
+
   // Atualiza botões ativos no menu
-  document.querySelectorAll('.lang-btn').forEach(function(btn) {
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
     btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLang);
   });
 
@@ -235,25 +235,25 @@ function setLanguage(lang) {
 }
 
 function applyTranslations() {
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
     var key = el.getAttribute('data-i18n');
     var text = t(key);
     if (text) el.textContent = text;
   });
 
-  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
     var key = el.getAttribute('data-i18n-html');
     var html = t(key);
     if (html) el.innerHTML = html;
   });
 
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
     var key = el.getAttribute('data-i18n-placeholder');
     var text = t(key);
     if (text) el.placeholder = text;
   });
 
-  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
     var key = el.getAttribute('data-i18n-title');
     var text = t(key);
     if (text) el.title = text;
@@ -272,6 +272,6 @@ function applyTranslations() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   setLanguage(currentLang);
 });

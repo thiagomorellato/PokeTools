@@ -431,7 +431,20 @@ function runRace(durationSec) {
       leaderBadge.style.borderColor = currentLeader.color;
     }
 
-    // Câmera dinâmica de perseguição no mobile: avança com o líder até o final
+    // ─── AUTO-SCROLL VERTICAL PARA ACOMPANHAR A RAIA DO LÍDER (MUITOS COMPETIDORES) ───
+    if (currentLeader && currentLeader.laneEl && cameraViewport) {
+      var laneTop = currentLeader.laneEl.offsetTop;
+      var laneH = currentLeader.laneEl.offsetHeight || 50;
+      var vpH = cameraViewport.clientHeight;
+      var targetScrollTop = laneTop - (vpH / 2) + (laneH / 2);
+      var maxScrollTop = cameraViewport.scrollHeight - vpH;
+      var clampedScrollTop = Math.max(0, Math.min(maxScrollTop, targetScrollTop));
+
+      // Suavização fluida (lerp)
+      cameraViewport.scrollTop += (clampedScrollTop - cameraViewport.scrollTop) * 0.08;
+    }
+
+    // ─── AUTO-SCROLL HORIZONTAL NO MOBILE (AVANÇO DA LARGADA ATÉ A CHEGADA) ───
     if (window.innerWidth <= 640 && currentLeader && trackContainer && cameraViewport) {
       var viewportW = cameraViewport.clientWidth;
       var trackW = trackContainer.scrollWidth || (viewportW * 2.2);
@@ -439,10 +452,10 @@ function runRace(durationSec) {
 
       var laneTrackW = currentLeader.trackArea ? currentLeader.trackArea.clientWidth : (trackW - 75);
       var leaderX = 75 + (currentLeader.progress * (laneTrackW - 35));
-      var targetScroll = leaderX - (viewportW * 0.45);
-      var clampedScroll = Math.max(0, Math.min(maxTrackScroll, targetScroll));
+      var targetScrollX = leaderX - (viewportW * 0.45);
+      var clampedScrollX = Math.max(0, Math.min(maxTrackScroll, targetScrollX));
 
-      trackContainer.style.transform = 'translateX(-' + clampedScroll + 'px)';
+      trackContainer.style.transform = 'translateX(-' + clampedScrollX + 'px)';
     }
 
     if (firstFinisher) {
