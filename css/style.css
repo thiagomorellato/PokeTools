@@ -1834,7 +1834,7 @@ input {
 
 /* Sprite dos Pokémons Nadando (Câmera Mais Próxima) */
 .lapras-sprite {
-  height: 52px;
+  height: 68px;
   width: auto;
   image-rendering: pixelated;
   transform: scaleX(-1);
@@ -1842,13 +1842,13 @@ input {
   animation: swim-bobbing 1.2s ease-in-out infinite alternate;
 }
 .compact-sprite {
-  height: 42px;
+  height: 56px;
 }
 .very-compact-sprite {
-  height: 36px;
+  height: 48px;
 }
 .ultra-compact-sprite {
-  height: 28px;
+  height: 38px;
 }
 
 @keyframes swim-bobbing {
@@ -1860,8 +1860,8 @@ input {
 /* Coroa do Líder flutuando sobre o sprite */
 .leader-crown-icon {
   position: absolute;
-  top: -14px;
-  font-size: 0.75rem;
+  top: -16px;
+  font-size: 0.95rem;
   animation: crown-float 0.8s ease-in-out infinite alternate;
   filter: drop-shadow(0 0 6px rgba(247,201,72,0.95));
   pointer-events: none;
@@ -2465,8 +2465,10 @@ input {
   .lane-name-col { width: 75px; min-width: 75px; font-size: 0.65rem; padding: 0 0.3rem; }
   .race-lane { height: 52px; padding-right: 38px; }
   .compact-lane { height: 44px; }
-  .lapras-sprite { height: 34px; max-width: 34px; }
-  .compact-sprite { height: 26px; max-width: 26px; }
+  .lapras-sprite { height: 54px; width: auto; max-width: none; }
+  .compact-sprite { height: 44px; width: auto; max-width: none; }
+  .very-compact-sprite { height: 38px; width: auto; max-width: none; }
+  .ultra-compact-sprite { height: 30px; width: auto; max-width: none; }
   .lapras-floating-name { font-size: 0.44rem; padding: 0.08rem 0.28rem; }
   
   .timer-controls-row { flex-direction: column; }

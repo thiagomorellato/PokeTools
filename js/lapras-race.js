@@ -414,8 +414,8 @@ function buildLanes() {
     finishBaseX = trackW - finishRight - 16;
   }
 
-  var topMargin = 32;
-  var bottomMargin = trackH - 58;
+  var topMargin = 28;
+  var bottomMargin = trackH - 72;
   var usableH = Math.max(160, bottomMargin - topMargin);
 
   var n = raceRunners.length;
@@ -572,8 +572,8 @@ function runRace(durationSec) {
   var cameraViewport = document.getElementById('race-camera-viewport');
   var leaderBadge    = document.getElementById('leader-badge');
   var trackH         = cameraViewport ? cameraViewport.clientHeight : 500;
-  var topMargin      = 32;
-  var bottomMargin   = trackH - 58;
+  var topMargin      = 28;
+  var bottomMargin   = trackH - 72;
 
   var lastTime = performance.now();
   var activeLeader = null;
