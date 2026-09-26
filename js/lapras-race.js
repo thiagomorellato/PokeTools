@@ -185,6 +185,132 @@ function generateRaceNames() {
   }
 }
 
+// ─── INSERÇÃO EM MASSA DE COMPETIDORES ───
+function parseBulkNames(rawText) {
+  if (!rawText) return [];
+  // Divide por quebras de linha (\r?\n), vírgula (,) ou ponto-e-vírgula (;)
+  var tokens = rawText.split(/[\r\n,;]+/);
+  var names = [];
+
+  tokens.forEach(function(token) {
+    var trimmed = token.trim();
+    if (trimmed.length > 0) {
+      // Limita tamanho do nome a 18 caracteres
+      names.push(trimmed.substring(0, 18));
+    }
+  });
+
+  return names;
+}
+
+function updateBulkCountPreview() {
+  var textarea = document.getElementById('bulk-names-textarea');
+  var countEl = document.getElementById('bulk-names-count');
+  var applyBtn = document.getElementById('bulk-apply-btn');
+  if (!textarea || !countEl) return;
+
+  var names = parseBulkNames(textarea.value);
+  countEl.textContent = names.length;
+
+  if (names.length > 100) {
+    countEl.style.color = 'var(--red)';
+  } else if (names.length >= 2) {
+    countEl.style.color = 'var(--green)';
+  } else {
+    countEl.style.color = 'var(--yellow)';
+  }
+
+  if (applyBtn) {
+    applyBtn.disabled = (names.length < 2);
+    applyBtn.style.opacity = (names.length < 2) ? '0.5' : '1';
+  }
+}
+
+function openBulkNamesModal() {
+  var modal = document.getElementById('bulk-names-modal');
+  var textarea = document.getElementById('bulk-names-textarea');
+  if (!modal) return;
+
+  // Se a textarea estiver vazia, pré-carrega os nomes atuais dos inputs da corrida
+  if (textarea && !textarea.value.trim()) {
+    var currentNames = [];
+    for (var i = 0; i < playerCount; i++) {
+      var inp = document.getElementById('rp-' + i);
+      if (inp && inp.value.trim().length > 0) {
+        currentNames.push(inp.value.trim());
+      } else if (savedNames && savedNames[i] && savedNames[i].trim().length > 0) {
+        currentNames.push(savedNames[i].trim());
+      }
+    }
+    if (currentNames.length > 0) {
+      textarea.value = currentNames.join('\n');
+    }
+  }
+
+  modal.classList.remove('hidden');
+  updateBulkCountPreview();
+  if (textarea) {
+    setTimeout(function() {
+      textarea.focus();
+      textarea.select();
+    }, 80);
+  }
+}
+
+function closeBulkNamesModal() {
+  var modal = document.getElementById('bulk-names-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function closeBulkNamesOnBackdrop(e) {
+  if (e.target.id === 'bulk-names-modal') {
+    closeBulkNamesModal();
+  }
+}
+
+function clearBulkTextarea() {
+  var textarea = document.getElementById('bulk-names-textarea');
+  if (textarea) {
+    textarea.value = '';
+    updateBulkCountPreview();
+    textarea.focus();
+  }
+}
+
+function applyBulkNames() {
+  var textarea = document.getElementById('bulk-names-textarea');
+  if (!textarea) return;
+
+  var names = parseBulkNames(textarea.value);
+  if (names.length < 2) {
+    alert(typeof t === 'function' ? t('bulk_alert_min') : 'Por favor, insira pelo menos 2 competidores para iniciar a corrida.');
+    return;
+  }
+
+  var finalNames = names;
+  if (names.length > 100) {
+    alert(typeof t === 'function' ? t('bulk_alert_max') : 'O limite máximo é de 100 competidores. Foram mantidos os primeiros 100 da lista.');
+    finalNames = names.slice(0, 100);
+  }
+
+  // Atualiza contagem de jogadores e vetor de nomes salvos
+  playerCount = finalNames.length;
+  savedNames = finalNames.slice();
+
+  var inputEl = document.getElementById('race-player-count');
+  if (inputEl) inputEl.value = playerCount;
+
+  var minusBtn = document.getElementById('players-minus-btn');
+  if (minusBtn) minusBtn.disabled = playerCount <= 2;
+  var plusBtn = document.getElementById('players-plus-btn');
+  if (plusBtn) plusBtn.disabled = playerCount >= 100;
+
+  // Reconstrói o grid com os novos competidores
+  generateRaceNames();
+
+  closeBulkNamesModal();
+}
+
 // Atribui Pokémons aquáticos únicos (Gens 1, 2 e 3) e Shinies APENAS se exceder o total de espécies (78)
 function assignWaterPokemonToRunners() {
   var shuffled = WATER_POKEMON_ROSTER.slice().sort(function() { return 0.5 - Math.random(); });

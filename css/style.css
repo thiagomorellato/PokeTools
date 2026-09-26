@@ -1339,6 +1339,170 @@ input {
   padding-right: 0.15rem;
 }
 
+/* ─── CABEÇALHO DO GRID DE NOMES COM BOTÃO DE INSERÇÃO EM MASSA ─── */
+.race-names-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.race-names-header-title {
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  color: var(--yellow);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.btn-bulk-open {
+  background: var(--input-bg);
+  border: 1.5px solid var(--card-border);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 0.42rem 0.95rem;
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-bulk-open:hover {
+  background: rgba(247, 201, 72, 0.15);
+  border-color: var(--yellow);
+  color: var(--yellow);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(247, 201, 72, 0.25);
+}
+
+/* ─── MODAL PADRÃO CENTRALIZADO (INSERÇÃO EM MASSA DE NOMES) ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.hidden { display: none !important; }
+
+.bulk-names-card {
+  width: 100%;
+  max-width: 540px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  animation: modal-pop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bulk-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bulk-modal-title {
+  font-family: var(--font-pixel);
+  font-size: 0.88rem;
+  color: var(--yellow);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.03em;
+}
+
+.bulk-modal-desc {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.bulk-names-textarea {
+  width: 100%;
+  min-height: 160px;
+  max-height: 300px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bulk-names-textarea:focus {
+  border-color: var(--blue-glow);
+  box-shadow: 0 0 14px rgba(58, 184, 245, 0.3);
+}
+
+.bulk-names-textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-weight: 500;
+}
+
+.bulk-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.bulk-count-badge {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.bulk-count-badge b {
+  font-size: 1rem;
+  color: var(--yellow);
+  transition: color 0.2s ease;
+}
+
+.btn-bulk-clear {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.btn-bulk-clear:hover {
+  color: var(--red);
+  background: rgba(230, 57, 70, 0.1);
+}
+
+.bulk-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+
 .race-names-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
