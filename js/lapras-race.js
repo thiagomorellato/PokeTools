@@ -442,6 +442,7 @@ function runRace(durationSec) {
     };
   });
 
+  var trackContainer = document.getElementById('race-track-container');
   var cameraViewport = document.getElementById('race-camera-viewport');
   var leaderBadge    = document.getElementById('leader-badge');
   var trackH         = cameraViewport ? cameraViewport.clientHeight : 500;
@@ -451,6 +452,8 @@ function runRace(durationSec) {
   var lastTime = performance.now();
   var activeLeader = null;
   var leaderCrown = null;
+  var currentCamX = 0;
+  if (trackContainer) trackContainer.style.transform = 'translateX(0px)';
 
   function animate(now) {
     var dt = Math.min((now - lastTime) / 1000, 0.1);
@@ -533,11 +536,38 @@ function runRace(durationSec) {
         leaderBadge.textContent = leaderPrefix + ' ' + currentLeader.name + pokeName;
         leaderBadge.style.borderColor = currentLeader.color;
       }
+
+      // ─── CÂMERA DINÂMICA HORIZONTAL (SEGUE O LÍDER NO MOBILE QUANDO A PISTA É MAIS LARGA) ───
+      if (trackContainer && cameraViewport) {
+        var viewportW = cameraViewport.clientWidth;
+        var trackW = trackContainer.scrollWidth;
+        var maxTrackScroll = Math.max(0, trackW - viewportW);
+
+        if (maxTrackScroll > 5) {
+          // Posiciona o líder por volta de 40% a 45% do viewport
+          var targetScrollX = currentLeader.currentX - (viewportW * 0.42);
+          var clampedScrollX = Math.max(0, Math.min(maxTrackScroll, targetScrollX));
+          currentCamX += (clampedScrollX - currentCamX) * 0.12;
+          trackContainer.style.transform = 'translateX(-' + currentCamX.toFixed(1) + 'px)';
+        } else {
+          trackContainer.style.transform = 'none';
+        }
+      }
     }
 
     if (firstFinisher) {
       raceWinner = firstFinisher;
       firstFinisher.spriteEl.style.left = firstFinisher.targetFinishX + 'px';
+      if (trackContainer && cameraViewport) {
+        var viewportW = cameraViewport.clientWidth;
+        var trackW = trackContainer.scrollWidth;
+        var maxTrackScroll = Math.max(0, trackW - viewportW);
+        if (maxTrackScroll > 5) {
+          var finishTargetX = firstFinisher.targetFinishX - (viewportW * 0.7);
+          var clampedFinishX = Math.max(0, Math.min(maxTrackScroll, finishTargetX));
+          trackContainer.style.transform = 'translateX(-' + clampedFinishX.toFixed(1) + 'px)';
+        }
+      }
       setTimeout(function() { showWinner(firstFinisher); }, 600);
       return;
     }
@@ -656,6 +686,8 @@ function raceAgainWithoutWinner() {
 function backToRaceSetup() {
   cancelAnimationFrame(raceAnimId);
   clearInterval(countdownTimer);
+  var trackContainer = document.getElementById('race-track-container');
+  if (trackContainer) trackContainer.style.transform = 'none';
   showRaceScreen('race-setup');
   generateRaceNames();
 }
@@ -668,5 +700,7 @@ function abortRace() {
     overlay.classList.add('hidden');
     overlay.style.display = 'none';
   }
+  var trackContainer = document.getElementById('race-track-container');
+  if (trackContainer) trackContainer.style.transform = 'none';
   showRaceScreen('race-setup');
 }

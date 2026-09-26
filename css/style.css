@@ -94,7 +94,7 @@ body.light-mode {
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
@@ -103,43 +103,53 @@ html, body {
 }
 
 body {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
   font-family: var(--font-body);
   color: var(--text-main);
   min-height: 100vh;
   min-height: 100dvh;
+  background-color: transparent !important;
+  background-image: none !important;
 }
 
 /* ─── PAPEL DE PAREDE DINÂMICO PIXEL ART (TEMAS CLARO E ESCURO) ─── */
 .site-bg-layer {
   position: fixed;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
   pointer-events: none;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
   image-rendering: auto;
   opacity: 1;
-  transition: opacity 0.45s ease-in-out;
+  background-image: url('../assets/backgrounds/dark-1.png');
+  transition: opacity 0.4s ease-in-out;
+}
+
+body.light-mode .site-bg-layer {
+  background-image: url('../assets/backgrounds/light-1.jpg');
 }
 
 .site-bg-layer.bg-fade-out {
-  opacity: 0.2;
+  opacity: 0.15;
 }
 
 .site-bg-overlay {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 25%, rgba(10, 20, 32, 0.68) 0%, rgba(8, 16, 26, 0.85) 100%);
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
+  background: radial-gradient(circle at 50% 25%, rgba(10, 20, 32, 0.58) 0%, rgba(8, 16, 26, 0.78) 100%);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
   transition: background 0.4s ease;
 }
 
 body.light-mode .site-bg-overlay {
-  background: radial-gradient(circle at 50% 25%, rgba(235, 245, 255, 0.72) 0%, rgba(210, 232, 252, 0.86) 100%);
+  background: radial-gradient(circle at 50% 25%, rgba(235, 245, 255, 0.65) 0%, rgba(210, 232, 252, 0.80) 100%);
 }
 
 /* ─── DESIGN SYSTEM DE BOTÕES PADRONIZADO ─── */
