@@ -1188,6 +1188,11 @@ input {
 }
 
 /* ─── LAPRAS RACE ─── */
+#section-race {
+  z-index: 20;
+  pointer-events: none;
+}
+
 .race-screen {
   min-height: calc(100vh - var(--nav-height));
   min-height: calc(100dvh - var(--nav-height));
@@ -1199,6 +1204,10 @@ input {
   max-width: 960px;
   margin: 0 auto;
   width: 100%;
+  pointer-events: none;
+}
+.race-screen > * {
+  pointer-events: auto;
 }
 .race-screen.hidden { display: none !important; }
 
@@ -1600,7 +1609,7 @@ input {
   animation: cdown-pop 0.65s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-.confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.confetti-container { position: fixed; inset: 0; pointer-events: none !important; z-index: 0; overflow: hidden; }
 .confetti-piece { position: absolute; border-radius: 3px; animation: confetti-fall linear forwards; }
 @keyframes confetti-fall {
   0%   { transform: translateY(-60px) rotate(0deg); opacity: 1; }
