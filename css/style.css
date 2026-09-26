@@ -1211,6 +1211,10 @@ input {
 }
 .race-screen.hidden { display: none !important; }
 
+#race-track {
+  max-width: min(1360px, 96vw);
+}
+
 .race-config-card { padding: 1.75rem; width: 100%; max-width: 580px; }
 .race-config-row { display: flex; gap: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
 .config-block { flex: 1; min-width: 140px; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
@@ -1391,24 +1395,79 @@ input {
 .race-camera-viewport {
   position: relative;
   width: 100%;
-  max-height: 72vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  border-radius: 16px;
-  border: 2.5px solid var(--swim-viewport-border);
+  height: clamp(450px, 68vh, 620px);
+  max-height: 640px;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 3px solid var(--swim-viewport-border);
   background: var(--swim-water-bg);
   z-index: 30;
   pointer-events: auto;
-  box-shadow: var(--swim-viewport-shadow);
+  box-shadow: var(--swim-viewport-shadow), inset 0 6px 24px rgba(0,0,0,0.35);
   transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  user-select: none;
 }
-.race-camera-viewport::-webkit-scrollbar { width: 6px; }
-.race-camera-viewport::-webkit-scrollbar-thumb { background: var(--swim-viewport-border); border-radius: 4px; }
 
 .race-track-container {
   position: relative;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Margens sutis do Rio (Topo e Base) estilo Duck Race */
+.river-bank {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 16px;
+  z-index: 12;
+  pointer-events: none;
+}
+.river-bank.bank-top {
+  top: 0;
+  background: linear-gradient(180deg, rgba(34, 139, 34, 0.75) 0%, rgba(20, 80, 20, 0.4) 65%, transparent 100%);
+  border-bottom: 2px solid rgba(139, 69, 19, 0.4);
+}
+.river-bank.bank-bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(34, 139, 34, 0.75) 0%, rgba(20, 80, 20, 0.4) 65%, transparent 100%);
+  border-top: 2px solid rgba(139, 69, 19, 0.4);
+}
+
+/* ─── LINHA DE LARGADA INCLINADA (ESTILO DUCK RACE) ─── */
+.start-line-col {
+  position: absolute;
+  left: 60px;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  transform-origin: bottom center;
+  transform: skewX(-26deg);
+}
+.start-flag-top,
+.start-flag-bottom {
+  font-size: 1.15rem;
+  z-index: 12;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+}
+.start-marker-line {
+  flex: 1;
+  width: 6px;
+  background: repeating-linear-gradient(
+    180deg,
+    #ffffff 0px, #ffffff 10px,
+    #e63946 10px, #e63946 20px
+  );
+  border: 1.5px solid #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(230, 57, 70, 0.6);
 }
 
 /* ─── Pista de Água Animada e Efeitos Visuais Temáticos ─── */
@@ -1472,121 +1531,158 @@ input {
   100% { opacity: 0.65; transform: scale(1.04); }
 }
 
+/* ─── ARENA DE RIO ABERTO (COMPETIDORES 2.5D) ─── */
 .race-lanes {
-  position: relative;
-  z-index: 2;
-  padding: 0.4rem 0;
+  position: absolute;
+  inset: 0;
   width: 100%;
-}
-
-.race-lane {
-  display: flex;
-  align-items: center;
-  height: 64px;
-  border-bottom: 1px solid var(--swim-lane-border);
-  padding-right: 50px;
-  box-sizing: border-box;
-}
-.race-lane.compact-lane {
-  height: 48px;
-}
-.race-lane:last-child { border-bottom: none; }
-
-.lane-name-col {
-  width: 90px;
-  min-width: 90px;
-  font-size: 0.7rem;
-  font-weight: 900;
-  color: #fff;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.85);
-  padding: 0 0.4rem;
-  white-space: nowrap;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
   overflow: hidden;
-  text-overflow: ellipsis;
-  z-index: 3;
 }
 
-.lane-track-area {
-  flex: 1;
-  position: relative;
-  height: 52px;
-  border-radius: 8px;
-  background: var(--swim-track-area-bg);
-  border: 1px solid var(--swim-lane-border);
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(2px);
-}
-.compact-lane .lane-track-area {
-  height: 40px;
-}
-
-/* Container do Lapras com Nome Flutuante em Cima */
+/* Container de Cada Nadador no Rio */
 .lapras-runner-wrap {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   user-select: none;
-  pointer-events: none;
-  will-change: left;
-  z-index: 10;
+  pointer-events: auto;
+  will-change: transform, left, top;
+  cursor: pointer;
+  transform: translateX(-100%);
+  transition: filter 0.15s ease;
+}
+.lapras-runner-wrap:hover {
+  filter: brightness(1.2) scale(1.1);
+  transform: translateX(-100%) scale(1.1);
+  z-index: 9999 !important;
 }
 
+/* Tag / Etiqueta do Participante */
 .lapras-floating-name {
   font-family: var(--font-pixel);
-  font-size: 0.48rem;
+  font-size: 0.44rem;
   font-weight: 900;
   white-space: nowrap;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 5px #000;
-  background: rgba(10, 20, 30, 0.65);
-  padding: 0.1rem 0.35rem;
-  border-radius: 4px;
+  background: rgba(10, 20, 30, 0.85);
+  padding: 0.12rem 0.38rem;
+  border-radius: 6px;
   line-height: 1.1;
   pointer-events: none;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  border: 1.5px solid currentColor;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+/* Formato compacto em pílula para muitos participantes */
 .compact-runner-wrap .lapras-floating-name {
-  font-size: 0.4rem;
-  padding: 0.05rem 0.25rem;
-  margin-bottom: 0px;
+  font-size: 0.38rem;
+  padding: 0.06rem 0.24rem;
+  border-radius: 4px;
+  margin-bottom: 1px;
 }
 
+/* Formato ultra-compacto (número circular estilo Duck Race) */
+.badge-runner-wrap .lapras-floating-name {
+  font-size: 0.44rem;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin-bottom: 0px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+.badge-runner-wrap:hover .lapras-floating-name {
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  height: auto;
+}
+
+/* Sprite dos Pokémons Nadando (Câmera Mais Próxima) */
 .lapras-sprite {
-  height: 38px;
+  height: 52px;
   width: auto;
   image-rendering: pixelated;
   transform: scaleX(-1);
+  filter: drop-shadow(0 6px 6px rgba(0, 15, 35, 0.45));
+  animation: swim-bobbing 1.2s ease-in-out infinite alternate;
 }
-.lapras-sprite.compact-sprite {
-  height: 26px;
+.compact-sprite {
+  height: 42px;
+}
+.very-compact-sprite {
+  height: 36px;
+}
+.ultra-compact-sprite {
+  height: 28px;
 }
 
+@keyframes swim-bobbing {
+  0% { transform: scaleX(-1) translateY(0) rotate(-1deg); }
+  50% { transform: scaleX(-1) translateY(-2px) rotate(1deg); }
+  100% { transform: scaleX(-1) translateY(1px) rotate(-1.5deg); }
+}
+
+/* Coroa do Líder flutuando sobre o sprite */
+.leader-crown-icon {
+  position: absolute;
+  top: -14px;
+  font-size: 0.75rem;
+  animation: crown-float 0.8s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 6px rgba(247,201,72,0.95));
+  pointer-events: none;
+  z-index: 1000;
+}
+@keyframes crown-float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* ─── LINHA DE CHEGADA QUADRICULADA (ESTILO DUCK RACE - PARALELA À LARGADA) ─── */
 .finish-line-col {
   position: absolute;
-  right: 0;
+  right: clamp(230px, 25vw, 290px);
   top: 0;
   bottom: 0;
-  width: 48px;
-  z-index: 5;
+  width: 32px;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(0,0,0,0.2);
-  border-left: 3px solid #fff;
-  border-image: repeating-linear-gradient(
-    180deg,
-    #fff 0px, #fff 8px,
-    #000 8px, #000 16px
-  ) 3;
+  justify-content: space-between;
   pointer-events: none;
+  transform-origin: bottom center;
+  transform: skewX(-26deg);
 }
-.finish-flag-top { font-size: 1.2rem; padding-top: 0.35rem; }
+.finish-flag-top,
+.finish-flag-bottom {
+  font-size: 1.25rem;
+  z-index: 22;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+}
+.finish-checkerboard {
+  flex: 1;
+  width: 22px;
+  background-image: 
+    linear-gradient(45deg, #111 25%, transparent 25%), 
+    linear-gradient(-45deg, #111 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #111 75%), 
+    linear-gradient(-45deg, transparent 75%, #111 75%);
+  background-size: 11px 11px;
+  background-position: 0 0, 0 5.5px, 5.5px -5.5px, -5.5px 0px;
+  background-color: #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #fff;
+  box-shadow: 0 0 12px rgba(0,0,0,0.5);
+}
 
 .countdown-overlay {
   position: fixed;

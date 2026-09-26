@@ -338,8 +338,11 @@
       <!-- Viewport da Pista de Natação -->
       <div class="race-camera-viewport" id="race-camera-viewport">
         
-        <!-- Pista de Corrida -->
+        <!-- Pista de Corrida (Rio Aberto 2.5D) -->
         <div class="race-track-container" id="race-track-container">
+          <!-- Margem Superior do Rio -->
+          <div class="river-bank bank-top"></div>
+
           <!-- Water Background -->
           <div class="water-bg">
             <div class="water-wave wv1"></div>
@@ -347,12 +350,26 @@
             <div class="water-wave wv3"></div>
             <div class="water-shimmer"></div>
           </div>
-          <!-- Lanes -->
-          <div class="race-lanes" id="race-lanes"></div>
-          <!-- Finish Line -->
-          <div class="finish-line-col">
-            <div class="finish-flag-top">🏁</div>
+
+          <!-- Linha de Largada Inclinada Estilo Duck Race -->
+          <div class="start-line-col" id="start-line-col">
+            <div class="start-flag-top">🚩</div>
+            <div class="start-marker-line"></div>
+            <div class="start-flag-bottom">🚩</div>
           </div>
+
+          <!-- Arena Aberta de Natação dos Competidores (Pelotão 2.5D) -->
+          <div class="race-lanes" id="race-lanes"></div>
+
+          <!-- Linha de Chegada Quadriculada Estilo Duck Race -->
+          <div class="finish-line-col" id="finish-line-col">
+            <div class="finish-flag-top">🏁</div>
+            <div class="finish-checkerboard"></div>
+            <div class="finish-flag-bottom">🏁</div>
+          </div>
+
+          <!-- Margem Inferior do Rio -->
+          <div class="river-bank bank-bottom"></div>
         </div>
 
       </div>

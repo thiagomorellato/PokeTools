@@ -254,62 +254,140 @@ function launchRace() {
   startCountdown(dur);
 }
 
-// ─── CONSTRUIR ELEMENTOS DA PISTA ───
+// ─── CONSTRUIR ELEMENTOS DA PISTA (PELOTÃO 2.5D / RIO ABERTO) ───
 function buildLanes() {
   var container = document.getElementById('race-lanes');
+  if (!container) return;
   container.innerHTML = '';
 
   var trackEl = document.getElementById('race-track-container');
   if (trackEl) trackEl.style.transform = 'none';
 
-  var isCompact = playerCount > 12;
+  var cameraViewport = document.getElementById('race-camera-viewport');
+  var trackW = cameraViewport ? cameraViewport.clientWidth : 960;
+  var trackH = cameraViewport ? cameraViewport.clientHeight : 500;
 
-  raceRunners.forEach(function(runner) {
-    var lane = document.createElement('div');
-    lane.className = 'race-lane' + (isCompact ? ' compact-lane' : '');
-    lane.id = 'lane-' + runner.id;
-    lane.style.borderLeft = '3px solid ' + runner.color;
+  if (trackH < 280) trackH = 500;
+  if (trackW < 360) trackW = 960;
 
-    var nameCol = document.createElement('div');
-    nameCol.className = 'lane-name-col';
-    nameCol.style.color = runner.color;
-    nameCol.textContent = runner.name;
+  // Ângulo e inclinação pronunciada (Duck Race: -26deg com transform-origin: bottom center)
+  var skewAngleDeg = 26;
+  var tanTheta = Math.tan(skewAngleDeg * Math.PI / 180);
 
-    var trackArea = document.createElement('div');
-    trackArea.className = 'lane-track-area';
-    trackArea.id = 'track-' + runner.id;
+  // Posição base da linha de largada na parte inferior do rio (y = trackH)
+  var startLineEl = document.getElementById('start-line-col');
+  var startBaseX = (startLineEl && startLineEl.offsetLeft) ? (startLineEl.offsetLeft + 14) : 74;
+
+  // Posição base da linha de chegada na parte inferior do rio (100% visível na tela)
+  var finishLineEl = document.getElementById('finish-line-col');
+  var finishBaseX;
+  if (finishLineEl && finishLineEl.offsetLeft) {
+    finishBaseX = finishLineEl.offsetLeft + 16;
+  } else {
+    var finishRight = Math.round(Math.min(290, Math.max(230, trackW * 0.25)));
+    finishBaseX = trackW - finishRight - 16;
+  }
+
+  var topMargin = 32;
+  var bottomMargin = trackH - 58;
+  var usableH = Math.max(160, bottomMargin - topMargin);
+
+  var n = raceRunners.length;
+  var isUltraDense = n > 50;
+  var isVeryDense = n > 25 && n <= 50; // Caso de ~40 participantes (como no print dos patos)
+  var isDense = n > 12 && n <= 25;
+
+  var spriteClass = isUltraDense ? ' ultra-compact-sprite' : (isVeryDense ? ' very-compact-sprite' : (isDense ? ' compact-sprite' : ''));
+
+  // Se houver mais de 50 competidores, usa 2 colunas paralelas na mesma inclinação
+  var useTwoCols = n > 50;
+  var totalRows = useTwoCols ? Math.ceil(n / 2) : n;
+
+  // Espaçamento vertical compacto para juntar os sprites em pelotão denso ("embolado" estilo Duck Race)
+  var stepY;
+  if (totalRows <= 12) {
+    stepY = Math.min(34, usableH / Math.max(1, totalRows - 1));
+  } else if (totalRows <= 25) {
+    stepY = Math.min(18, Math.max(12, usableH / totalRows));
+  } else {
+    stepY = Math.min(11, Math.max(7.5, (usableH - 30) / totalRows));
+  }
+
+  var packH = (totalRows - 1) * stepY;
+  var startY0 = Math.max(topMargin, Math.round(topMargin + (usableH - packH) / 2));
+
+  raceRunners.forEach(function(runner, i) {
+    var col = useTwoCols ? (i % 2) : 0;
+    var row = useTwoCols ? Math.floor(i / 2) : i;
+
+    var startY = Math.round(startY0 + row * stepY);
+
+    // Na perspectiva inclinada (-26deg):
+    // Na base (y = trackH), offset = 0.
+    // No topo (y = 0), offset = trackH * tanTheta (inclinado para a direita).
+    var tiltX = (trackH - startY) * tanTheta;
+    var lineXAtY = startBaseX + tiltX;
+    var finishLineXAtY = finishBaseX + tiltX;
+
+    // Com transform: translateX(-100%) no CSS, o lado direito do wrapper encosta EXATAMENTE em startX!
+    // Isso garante que QUALQUER sprite (Wingull com asas abertas, Kyogre gigante ou Magikarp)
+    // fique milimetricamente alinhado na linha de largada pelo seu lado direito (frente do nadador)!
+    var startX = Math.round(lineXAtY - (col * 14));
+    var targetFinishX = Math.round(finishLineXAtY);
 
     var runnerWrap = document.createElement('div');
-    runnerWrap.className = 'lapras-runner-wrap' + (isCompact ? ' compact-runner-wrap' : '');
+    runnerWrap.className = 'lapras-runner-wrap' + ((isVeryDense || isUltraDense) ? ' badge-runner-wrap' : (isDense ? ' compact-runner-wrap' : ''));
     runnerWrap.id = 'runner-' + runner.id;
+    runnerWrap.style.left = startX + 'px';
+    runnerWrap.style.top = startY + 'px';
+    // Profundidade 2.5D: quem está mais abaixo na tela fica à frente (maior z-index)
+    runnerWrap.style.zIndex = Math.round(startY * 10) + col;
 
+    // Tag com nome / número do competidor
     var floatingName = document.createElement('span');
     floatingName.className = 'lapras-floating-name';
-    floatingName.textContent = runner.name;
     floatingName.style.color = runner.color;
+    floatingName.style.borderColor = runner.color;
 
-    var poke = runner.pokemon || { name: 'lapras', id: 131, isShiny: false, spriteUrl: 'https://play.pokemonshowdown.com/sprites/ani/lapras.gif', fallbackUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png' };
+    if (isVeryDense || isUltraDense) {
+      floatingName.textContent = (i + 1);
+      floatingName.title = (i + 1) + '. ' + runner.name;
+    } else {
+      floatingName.textContent = runner.name;
+      floatingName.title = runner.name;
+    }
+    runnerWrap.appendChild(floatingName);
+
+    // Sprite oficial do Pokémon Aquático nadando
+    var poke = runner.pokemon || {
+      name: 'lapras',
+      id: 131,
+      isShiny: false,
+      spriteUrl: 'https://play.pokemonshowdown.com/sprites/ani/lapras.gif',
+      fallbackUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png'
+    };
 
     var sprite = document.createElement('img');
-    sprite.className = 'lapras-sprite' + (isCompact ? ' compact-sprite' : '');
+    sprite.className = 'lapras-sprite' + spriteClass;
     sprite.alt = poke.name;
     sprite.id = 'sprite-' + runner.id;
     sprite.src = poke.spriteUrl;
     sprite.onerror = function() {
       this.src = poke.fallbackUrl;
     };
-
-    runnerWrap.appendChild(floatingName);
     runnerWrap.appendChild(sprite);
-    trackArea.appendChild(runnerWrap);
 
-    lane.appendChild(nameCol);
-    lane.appendChild(trackArea);
-    container.appendChild(lane);
+    container.appendChild(runnerWrap);
 
-    runner.laneEl    = lane;
-    runner.spriteEl  = runnerWrap;
-    runner.trackArea = trackArea;
+    runner.x0 = startX;
+    runner.y0 = startY;
+    runner.currentX = startX;
+    runner.currentY = startY;
+    runner.targetFinishX = targetFinishX;
+    runner.totalDistance = targetFinishX - startX;
+    runner.spriteEl = runnerWrap;
+    runner.floatingNameEl = floatingName;
+    runner.crownEl = null;
   });
 }
 
@@ -346,7 +424,7 @@ function showCount(el, val) {
   el.style.animation = 'cdown-pop 0.65s cubic-bezier(0.34,1.56,0.64,1)';
 }
 
-// ─── EXECUÇÃO DA CORRIDA COM CÂMERA DINÂMICA ───
+// ─── EXECUÇÃO DA CORRIDA 2.5D (RIO ABERTO SEM ROLAGEM) ───
 function runRace(durationSec) {
   var startTime = performance.now();
   var durationMs = durationSec * 1000;
@@ -359,29 +437,30 @@ function runRace(durationSec) {
     return {
       active: false,
       multiplier: 1,
-      nextCheck: 2000 + Math.random() * 3000,
+      nextCheck: 1800 + Math.random() * 2600,
       duration: 0
     };
   });
 
-  var trackContainer = document.getElementById('race-track-container');
   var cameraViewport = document.getElementById('race-camera-viewport');
   var leaderBadge    = document.getElementById('leader-badge');
+  var trackH         = cameraViewport ? cameraViewport.clientHeight : 500;
+  var topMargin      = 32;
+  var bottomMargin   = trackH - 58;
 
   var lastTime = performance.now();
+  var activeLeader = null;
+  var leaderCrown = null;
 
   function animate(now) {
     var dt = Math.min((now - lastTime) / 1000, 0.1);
     lastTime = now;
 
     var elapsed = now - startTime;
-    var rawProgress = Math.min(elapsed / durationMs, 1);
-
     var firstFinisher = null;
     var maxProg = -1;
     var currentLeader = null;
 
-    // Velocidade base para completar a pista no tempo estipulado
     var baseRate = 1 / durationSec;
 
     raceRunners.forEach(function(runner, i) {
@@ -389,15 +468,14 @@ function runRace(durationSec) {
 
       var b = bursts[i];
       if (elapsed > b.nextCheck) {
-        if (!b.active && Math.random() < 0.40) {
+        if (!b.active && Math.random() < 0.42) {
           b.active = true;
-          // Arrancada suave ou pequeno cansaço momentâneo
-          b.multiplier = (Math.random() < 0.60) ? (1.35 + Math.random() * 0.4) : (0.70 + Math.random() * 0.2);
-          b.duration = elapsed + 1000 + Math.random() * 1600;
+          b.multiplier = (Math.random() < 0.62) ? (1.35 + Math.random() * 0.4) : (0.72 + Math.random() * 0.2);
+          b.duration = elapsed + 900 + Math.random() * 1500;
         } else if (b.active && elapsed > b.duration) {
           b.active = false;
           b.multiplier = 1;
-          b.nextCheck = elapsed + 1800 + Math.random() * 3000;
+          b.nextCheck = elapsed + 1600 + Math.random() * 2800;
         }
       }
 
@@ -409,65 +487,57 @@ function runRace(durationSec) {
         runner.progress + (baseRate * (speedMult + microWave) * dt)
       );
 
+      // Posição X proporcional ao trajeto exato até a linha de chegada inclinada
+      runner.currentX = runner.x0 + (runner.progress * runner.totalDistance);
+
+      // Efeito de Natação e Flutuação 2.5D na água
+      var waveY = Math.sin(elapsed * 0.0035 + runner.id * 1.4) * (playerCount > 30 ? 2.5 : 4.5);
+      runner.currentY = Math.max(topMargin, Math.min(bottomMargin, runner.y0 + waveY));
+
+      if (runner.spriteEl) {
+        runner.spriteEl.style.left = Math.round(runner.currentX) + 'px';
+        runner.spriteEl.style.top  = Math.round(runner.currentY) + 'px';
+        // Profundidade 2.5D: quem está mais abaixo na tela fica sempre na frente
+        runner.spriteEl.style.zIndex = Math.round(runner.currentY * 10) + Math.round(runner.progress * 30);
+      }
+
       if (runner.progress > maxProg) {
         maxProg = runner.progress;
         currentLeader = runner;
       }
 
-      var trackAreaW = runner.trackArea ? runner.trackArea.clientWidth : 300;
-      var spriteW = (playerCount > 12 ? 28 : 36);
-      var maxLeftPx = Math.max(10, trackAreaW - spriteW);
-      var currentLeftPx = Math.min(maxLeftPx, Math.max(0, runner.progress * maxLeftPx));
-
-      if (runner.spriteEl) {
-        runner.spriteEl.style.left = currentLeftPx + 'px';
-      }
-
-      if (runner.progress >= 1 && !firstFinisher) {
+      if ((runner.progress >= 1 || runner.currentX >= runner.targetFinishX) && !firstFinisher) {
         runner.finished = true;
         firstFinisher = runner;
       }
     });
 
-    if (currentLeader && leaderBadge) {
-      var leaderPrefix = typeof t === 'function' ? t('race_leader_prefix') : '👑 Líder:';
-      var pokeName = (currentLeader.pokemon ? ' (' + currentLeader.pokemon.name.toUpperCase() + (currentLeader.pokemon.isShiny ? ' ✨' : '') + ')' : '');
-      leaderBadge.textContent = leaderPrefix + ' ' + currentLeader.name + pokeName;
-      leaderBadge.style.borderColor = currentLeader.color;
-    }
+    // ─── DESTAQUE DO LÍDER E COROA 👑 ───
+    if (currentLeader) {
+      if (currentLeader !== activeLeader) {
+        if (leaderCrown && leaderCrown.parentNode) {
+          leaderCrown.parentNode.removeChild(leaderCrown);
+        }
+        leaderCrown = document.createElement('span');
+        leaderCrown.className = 'leader-crown-icon';
+        leaderCrown.textContent = '👑';
+        if (currentLeader.spriteEl) {
+          currentLeader.spriteEl.appendChild(leaderCrown);
+        }
+        activeLeader = currentLeader;
+      }
 
-    // ─── AUTO-SCROLL VERTICAL PARA ACOMPANHAR A RAIA DO LÍDER (MUITOS COMPETIDORES) ───
-    if (currentLeader && currentLeader.laneEl && cameraViewport) {
-      var laneTop = currentLeader.laneEl.offsetTop;
-      var laneH = currentLeader.laneEl.offsetHeight || 50;
-      var vpH = cameraViewport.clientHeight;
-      var targetScrollTop = laneTop - (vpH / 2) + (laneH / 2);
-      var maxScrollTop = cameraViewport.scrollHeight - vpH;
-      var clampedScrollTop = Math.max(0, Math.min(maxScrollTop, targetScrollTop));
-
-      // Suavização fluida (lerp)
-      cameraViewport.scrollTop += (clampedScrollTop - cameraViewport.scrollTop) * 0.08;
-    }
-
-    // ─── AUTO-SCROLL HORIZONTAL NO MOBILE (AVANÇO DA LARGADA ATÉ A CHEGADA) ───
-    if (window.innerWidth <= 640 && currentLeader && trackContainer && cameraViewport) {
-      var viewportW = cameraViewport.clientWidth;
-      var trackW = trackContainer.scrollWidth || (viewportW * 2.2);
-      var maxTrackScroll = Math.max(0, trackW - viewportW);
-
-      var laneTrackW = currentLeader.trackArea ? currentLeader.trackArea.clientWidth : (trackW - 75);
-      var leaderX = 75 + (currentLeader.progress * (laneTrackW - 35));
-      var targetScrollX = leaderX - (viewportW * 0.45);
-      var clampedScrollX = Math.max(0, Math.min(maxTrackScroll, targetScrollX));
-
-      trackContainer.style.transform = 'translateX(-' + clampedScrollX + 'px)';
+      if (leaderBadge) {
+        var leaderPrefix = typeof t === 'function' ? t('race_leader_prefix') : '👑 Líder:';
+        var pokeName = (currentLeader.pokemon ? ' (' + currentLeader.pokemon.name.toUpperCase() + (currentLeader.pokemon.isShiny ? ' ✨' : '') + ')' : '');
+        leaderBadge.textContent = leaderPrefix + ' ' + currentLeader.name + pokeName;
+        leaderBadge.style.borderColor = currentLeader.color;
+      }
     }
 
     if (firstFinisher) {
       raceWinner = firstFinisher;
-      var trackAreaW = firstFinisher.trackArea.clientWidth || 300;
-      var spriteW = (playerCount > 12 ? 28 : 36);
-      firstFinisher.spriteEl.style.left = (trackAreaW - spriteW) + 'px';
+      firstFinisher.spriteEl.style.left = firstFinisher.targetFinishX + 'px';
       setTimeout(function() { showWinner(firstFinisher); }, 600);
       return;
     }
