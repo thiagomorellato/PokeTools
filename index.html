@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2.4">
+  <link rel="stylesheet" href="css/style.css?v=2.5">
 </head>
 <body>
 
@@ -326,7 +326,7 @@
         <div class="race-names-header-row">
           <span class="race-names-header-title" data-i18n="race_names_list_title">Lista de Participantes</span>
           <button class="btn-bulk-open" type="button" onclick="openBulkNamesModal()" title="Colar lista de nomes separados por linha ou vírgula">
-            <span>📋</span> <span data-i18n="race_bulk_btn">Inserir Nomes em Massa</span>
+            <span data-i18n="race_bulk_btn">Inserir em Massa</span>
           </button>
         </div>
 
@@ -425,7 +425,7 @@
   <div id="bulk-names-modal" class="modal-overlay hidden" onclick="closeBulkNamesOnBackdrop(event)">
     <div class="glass-card bulk-names-card">
       <div class="bulk-modal-header">
-        <h3 class="bulk-modal-title" data-i18n="bulk_modal_title">📋 Adicionar Competidores em Massa</h3>
+        <h3 class="bulk-modal-title" data-i18n="bulk_modal_title">Adicionar Competidores em Massa</h3>
         <button class="menu-close-btn" type="button" onclick="closeBulkNamesModal()" title="Fechar">✕</button>
       </div>
 
@@ -444,13 +444,13 @@
         <div class="bulk-count-badge">
           <span data-i18n="bulk_detected_count">Detectados:</span> <b id="bulk-names-count">0</b> <span data-i18n="bulk_players_max">(mín 2, máx 100)</span>
         </div>
-        <button class="btn-bulk-clear" type="button" onclick="clearBulkTextarea()" data-i18n="bulk_clear_btn">🗑️ Limpar</button>
+        <button class="btn-bulk-clear" type="button" onclick="clearBulkTextarea()" data-i18n="bulk_clear_btn">Limpar</button>
       </div>
 
       <div class="bulk-modal-actions">
         <button class="btn btn-ghost" type="button" onclick="closeBulkNamesModal()" data-i18n="bulk_cancel_btn">Cancelar</button>
         <button class="btn btn-yellow" type="button" id="bulk-apply-btn" onclick="applyBulkNames()" data-i18n="bulk_apply_btn">
-          ✨ Aplicar Participantes
+          Aplicar Participantes
         </button>
       </div>
     </div>
@@ -499,12 +499,12 @@
     </div>
   </div>
 
-  <script src="js/i18n.js?v=2.4"></script>
-  <script src="js/pokemon-data.js?v=2.4"></script>
-  <script src="js/stats.js?v=2.4"></script>
-  <script src="js/pokedex.js?v=2.4"></script>
-  <script src="js/main.js?v=2.4"></script>
-  <script src="js/timer.js?v=2.4"></script>
-  <script src="js/lapras-race.js?v=2.4"></script>
+  <script src="js/i18n.js?v=2.5"></script>
+  <script src="js/pokemon-data.js?v=2.5"></script>
+  <script src="js/stats.js?v=2.5"></script>
+  <script src="js/pokedex.js?v=2.5"></script>
+  <script src="js/main.js?v=2.5"></script>
+  <script src="js/timer.js?v=2.5"></script>
+  <script src="js/lapras-race.js?v=2.5"></script>
 </body>
 </html>

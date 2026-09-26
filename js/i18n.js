@@ -111,14 +111,14 @@ var TRANSLATIONS = {
 
     // Bulk Names Modal
     race_names_list_title: "Lista de Participantes",
-    race_bulk_btn: "📋 Inserir em Massa",
-    bulk_modal_title: "📋 Adicionar Competidores em Massa",
+    race_bulk_btn: "Inserir em Massa",
+    bulk_modal_title: "Adicionar Competidores em Massa",
     bulk_modal_desc: "Cole a lista de nomes dos competidores. Eles podem estar separados por quebra de linha ou por vírgula.",
     bulk_detected_count: "Detectados:",
     bulk_players_max: "(mín 2, máx 100)",
-    bulk_clear_btn: "🗑️ Limpar",
+    bulk_clear_btn: "Limpar",
     bulk_cancel_btn: "Cancelar",
-    bulk_apply_btn: "✨ Aplicar Participantes",
+    bulk_apply_btn: "Aplicar Participantes",
     bulk_alert_min: "Por favor, insira pelo menos 2 competidores para iniciar a corrida.",
     bulk_alert_max: "O limite máximo é de 100 competidores. Foram mantidos os primeiros 100 da lista."
   },
@@ -229,14 +229,14 @@ var TRANSLATIONS = {
 
     // Bulk Names Modal
     race_names_list_title: "Competitors List",
-    race_bulk_btn: "📋 Bulk Import",
-    bulk_modal_title: "📋 Bulk Add Competitors",
+    race_bulk_btn: "Bulk Import",
+    bulk_modal_title: "Bulk Add Competitors",
     bulk_modal_desc: "Paste competitor names below. They can be separated by newlines or commas.",
     bulk_detected_count: "Detected:",
     bulk_players_max: "(min 2, max 100)",
-    bulk_clear_btn: "🗑️ Clear",
+    bulk_clear_btn: "Clear",
     bulk_cancel_btn: "Cancel",
-    bulk_apply_btn: "✨ Apply Competitors",
+    bulk_apply_btn: "Apply Competitors",
     bulk_alert_min: "Please enter at least 2 competitors to start the race.",
     bulk_alert_max: "The maximum limit is 100 competitors. The first 100 were kept."
   }
