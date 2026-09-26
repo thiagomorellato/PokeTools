@@ -69,28 +69,51 @@ var THEME_WALLPAPERS = {
   ]
 };
 
+var currentBgIndices = {
+  dark: -1,
+  light: -1
+};
+
 function getActiveTheme() {
   return document.body.classList.contains('light-mode') ? 'light' : 'dark';
 }
 
-function getSavedBgIndex(theme) {
-  var raw = localStorage.getItem('poketools_bg_' + theme);
+function pickRandomBgIndex(theme) {
   var list = THEME_WALLPAPERS[theme] || [];
-  if (raw !== null && !isNaN(parseInt(raw, 10))) {
-    var idx = parseInt(raw, 10);
-    if (idx >= 0 && idx < list.length) return idx;
+  if (list.length <= 1) return 0;
+
+  var lastIdx = currentBgIndices[theme];
+  if (lastIdx < 0) {
+    var raw = sessionStorage.getItem('poketools_last_bg_' + theme);
+    if (raw !== null && !isNaN(parseInt(raw, 10))) {
+      lastIdx = parseInt(raw, 10);
+    }
   }
-  var randomIdx = Math.floor(Math.random() * list.length);
-  localStorage.setItem('poketools_bg_' + theme, randomIdx);
-  return randomIdx;
+
+  var newIdx;
+  var attempts = 0;
+  do {
+    newIdx = Math.floor(Math.random() * list.length);
+    attempts++;
+  } while (list.length > 1 && newIdx === lastIdx && attempts < 10);
+
+  sessionStorage.setItem('poketools_last_bg_' + theme, newIdx);
+  currentBgIndices[theme] = newIdx;
+  return newIdx;
 }
 
-function updateSiteBackground(fade) {
+function updateSiteBackground(fade, forceRandom) {
   var theme = getActiveTheme();
   var list = THEME_WALLPAPERS[theme] || [];
   if (!list.length) return;
 
-  var idx = getSavedBgIndex(theme);
+  var idx;
+  if (forceRandom || currentBgIndices[theme] < 0) {
+    idx = pickRandomBgIndex(theme);
+  } else {
+    idx = currentBgIndices[theme];
+  }
+
   var bgUrl = list[idx];
   var layer = document.getElementById('site-bg-layer');
   if (!layer) return;
@@ -111,10 +134,11 @@ function cycleSiteBackground() {
   var list = THEME_WALLPAPERS[theme] || [];
   if (!list.length) return;
 
-  var currentIdx = getSavedBgIndex(theme);
+  var currentIdx = currentBgIndices[theme] >= 0 ? currentBgIndices[theme] : 0;
   var nextIdx = (currentIdx + 1) % list.length;
-  localStorage.setItem('poketools_bg_' + theme, nextIdx);
-  updateSiteBackground(true);
+  currentBgIndices[theme] = nextIdx;
+  sessionStorage.setItem('poketools_last_bg_' + theme, nextIdx);
+  updateSiteBackground(true, false);
 }
 
 // ─── MODO DIA / NOITE ───
@@ -127,7 +151,8 @@ function initTheme() {
     document.body.classList.remove('light-mode');
     updateThemeIcon('dark');
   }
-  updateSiteBackground(false);
+  // A cada novo carregamento ou refresh, sorteia um wallpaper diferente
+  updateSiteBackground(false, true);
 }
 
 function toggleDayNightMode() {
@@ -135,7 +160,7 @@ function toggleDayNightMode() {
   var theme = isLight ? 'light' : 'dark';
   localStorage.setItem('poketools_theme', theme);
   updateThemeIcon(theme);
-  updateSiteBackground(true);
+  updateSiteBackground(true, true);
   if (typeof initParticles === 'function') initParticles();
 }
 
