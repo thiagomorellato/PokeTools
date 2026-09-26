@@ -12,6 +12,10 @@
 </head>
 <body>
 
+  <!-- Camada de Papel de Parede Pixel Art e Overlay de Contraste -->
+  <div id="site-bg-layer" class="site-bg-layer"></div>
+  <div id="site-bg-overlay" class="site-bg-overlay"></div>
+
   <!-- Camada de Pokémons Andando no Fundo -->
   <div id="pokemon-roamer-container" class="pokemon-roamer-layer"></div>
 
@@ -81,6 +85,10 @@
         <button class="menu-toggle-theme-btn" id="menu-theme-btn" onclick="toggleDayNightMode()">
           <span id="theme-toggle-icon">☀️</span>
           <span id="theme-toggle-text" data-i18n="theme_light">Modo Claro ☀️</span>
+        </button>
+        <button class="menu-toggle-bg-btn" id="menu-bg-btn" onclick="cycleSiteBackground()" title="Alternar papel de parede">
+          <span>🖼️</span>
+          <span id="theme-bg-text" data-i18n="theme_change_bg">Trocar Papel de Parede</span>
         </button>
       </div>
 

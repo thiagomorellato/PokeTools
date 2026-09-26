@@ -51,6 +51,72 @@ function openStatsFromMenu() {
   }
 }
 
+// ─── PAPEIS DE PAREDE DINÂMICOS PIXEL ART (TEMAS CLARO E ESCURO) ───
+var THEME_WALLPAPERS = {
+  dark: [
+    'assets/backgrounds/dark-1.png',
+    'assets/backgrounds/dark-2.png',
+    'assets/backgrounds/dark-3.jpg',
+    'assets/backgrounds/dark-4.jpg',
+    'assets/backgrounds/dark-5.png'
+  ],
+  light: [
+    'assets/backgrounds/light-1.jpg',
+    'assets/backgrounds/light-2.png',
+    'assets/backgrounds/light-3.jpg',
+    'assets/backgrounds/light-4.jpg',
+    'assets/backgrounds/light-5.jpg'
+  ]
+};
+
+function getActiveTheme() {
+  return document.body.classList.contains('light-mode') ? 'light' : 'dark';
+}
+
+function getSavedBgIndex(theme) {
+  var raw = localStorage.getItem('poketools_bg_' + theme);
+  var list = THEME_WALLPAPERS[theme] || [];
+  if (raw !== null && !isNaN(parseInt(raw, 10))) {
+    var idx = parseInt(raw, 10);
+    if (idx >= 0 && idx < list.length) return idx;
+  }
+  var randomIdx = Math.floor(Math.random() * list.length);
+  localStorage.setItem('poketools_bg_' + theme, randomIdx);
+  return randomIdx;
+}
+
+function updateSiteBackground(fade) {
+  var theme = getActiveTheme();
+  var list = THEME_WALLPAPERS[theme] || [];
+  if (!list.length) return;
+
+  var idx = getSavedBgIndex(theme);
+  var bgUrl = list[idx];
+  var layer = document.getElementById('site-bg-layer');
+  if (!layer) return;
+
+  if (fade) {
+    layer.classList.add('bg-fade-out');
+    setTimeout(function () {
+      layer.style.backgroundImage = 'url("' + bgUrl + '")';
+      layer.classList.remove('bg-fade-out');
+    }, 200);
+  } else {
+    layer.style.backgroundImage = 'url("' + bgUrl + '")';
+  }
+}
+
+function cycleSiteBackground() {
+  var theme = getActiveTheme();
+  var list = THEME_WALLPAPERS[theme] || [];
+  if (!list.length) return;
+
+  var currentIdx = getSavedBgIndex(theme);
+  var nextIdx = (currentIdx + 1) % list.length;
+  localStorage.setItem('poketools_bg_' + theme, nextIdx);
+  updateSiteBackground(true);
+}
+
 // ─── MODO DIA / NOITE ───
 function initTheme() {
   var savedTheme = localStorage.getItem('poketools_theme') || 'dark';
@@ -61,6 +127,7 @@ function initTheme() {
     document.body.classList.remove('light-mode');
     updateThemeIcon('dark');
   }
+  updateSiteBackground(false);
 }
 
 function toggleDayNightMode() {
@@ -68,6 +135,7 @@ function toggleDayNightMode() {
   var theme = isLight ? 'light' : 'dark';
   localStorage.setItem('poketools_theme', theme);
   updateThemeIcon(theme);
+  updateSiteBackground(true);
   if (typeof initParticles === 'function') initParticles();
 }
 

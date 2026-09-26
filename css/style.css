@@ -107,10 +107,39 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   min-height: 100dvh;
-  background-image:
-    radial-gradient(ellipse at 15% 15%, var(--bg-radial-1) 0%, transparent 60%),
-    radial-gradient(ellipse at 85% 85%, var(--bg-radial-2) 0%, transparent 60%);
-  background-attachment: fixed;
+}
+
+/* ─── PAPEL DE PAREDE DINÂMICO PIXEL ART (TEMAS CLARO E ESCURO) ─── */
+.site-bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  image-rendering: auto;
+  opacity: 1;
+  transition: opacity 0.45s ease-in-out;
+}
+
+.site-bg-layer.bg-fade-out {
+  opacity: 0.2;
+}
+
+.site-bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 25%, rgba(10, 20, 32, 0.68) 0%, rgba(8, 16, 26, 0.85) 100%);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  transition: background 0.4s ease;
+}
+
+body.light-mode .site-bg-overlay {
+  background: radial-gradient(circle at 50% 25%, rgba(235, 245, 255, 0.72) 0%, rgba(210, 232, 252, 0.86) 100%);
 }
 
 /* ─── DESIGN SYSTEM DE BOTÕES PADRONIZADO ─── */
@@ -694,6 +723,29 @@ input {
   transition: all 0.2s ease;
 }
 .menu-toggle-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.menu-toggle-bg-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0.55rem;
+  background: var(--input-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--btn-radius);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.menu-toggle-bg-btn:hover {
   background: rgba(255, 255, 255, 0.14);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
