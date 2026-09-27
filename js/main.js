@@ -51,40 +51,61 @@ function openStatsFromMenu() {
   }
 }
 
-// ─── PAPEIS DE PAREDE DINÂMICOS PIXEL ART (TEMAS CLARO E ESCURO) ───
+// ─── PAPÉIS DE PAREDE DINÂMICOS UNIFICADOS (28 WALLPAPERS) ───
+var SITE_WALLPAPERS = [
+  'assets/backgrounds/wallpaper-01.png',
+  'assets/backgrounds/wallpaper-02.png',
+  'assets/backgrounds/wallpaper-03.jpg',
+  'assets/backgrounds/wallpaper-04.jpg',
+  'assets/backgrounds/wallpaper-05.png',
+  'assets/backgrounds/wallpaper-06.jpg',
+  'assets/backgrounds/wallpaper-07.png',
+  'assets/backgrounds/wallpaper-08.jpg',
+  'assets/backgrounds/wallpaper-09.jpg',
+  'assets/backgrounds/wallpaper-10.jpg',
+  'assets/backgrounds/wallpaper-11.jpg',
+  'assets/backgrounds/wallpaper-12.jpg',
+  'assets/backgrounds/wallpaper-13.jpg',
+  'assets/backgrounds/wallpaper-14.jpg',
+  'assets/backgrounds/wallpaper-15.jpg',
+  'assets/backgrounds/wallpaper-16.jpg',
+  'assets/backgrounds/wallpaper-17.jpg',
+  'assets/backgrounds/wallpaper-18.jpg',
+  'assets/backgrounds/wallpaper-19.jpg',
+  'assets/backgrounds/wallpaper-20.jpg',
+  'assets/backgrounds/wallpaper-21.jpg',
+  'assets/backgrounds/wallpaper-22.jpg',
+  'assets/backgrounds/wallpaper-23.jpg',
+  'assets/backgrounds/wallpaper-24.jpg',
+  'assets/backgrounds/wallpaper-25.jpg',
+  'assets/backgrounds/wallpaper-26.jpg',
+  'assets/backgrounds/wallpaper-27.jpg',
+  'assets/backgrounds/wallpaper-28.jpg'
+];
+
 var THEME_WALLPAPERS = {
-  dark: [
-    'assets/backgrounds/dark-1.png',
-    'assets/backgrounds/dark-2.png',
-    'assets/backgrounds/dark-3.jpg',
-    'assets/backgrounds/dark-4.jpg',
-    'assets/backgrounds/dark-5.png'
-  ],
-  light: [
-    'assets/backgrounds/light-1.jpg',
-    'assets/backgrounds/light-2.png',
-    'assets/backgrounds/light-3.jpg',
-    'assets/backgrounds/light-4.jpg',
-    'assets/backgrounds/light-5.jpg'
-  ]
+  dark: SITE_WALLPAPERS,
+  light: SITE_WALLPAPERS
 };
 
-var currentBgIndices = {
-  dark: -1,
-  light: -1
-};
+var currentBgIndex = -1;
+
+var activeBgLayer = 0;
+var bgPreloadToken = 0;
+var BG_ROTATION_INTERVAL_MS = 3 * 60 * 1000; // Troca automática a cada 3 minutos
+var bgAutoRotationTimer = null;
 
 function getActiveTheme() {
   return document.body.classList.contains('light-mode') ? 'light' : 'dark';
 }
 
-function pickRandomBgIndex(theme) {
-  var list = THEME_WALLPAPERS[theme] || [];
-  if (list.length <= 1) return 0;
+function pickRandomBgIndex() {
+  var list = SITE_WALLPAPERS;
+  if (!list || list.length <= 1) return 0;
 
-  var lastIdx = currentBgIndices[theme];
+  var lastIdx = currentBgIndex;
   if (lastIdx < 0) {
-    var raw = sessionStorage.getItem('poketools_last_bg_' + theme);
+    var raw = sessionStorage.getItem('poketools_last_bg');
     if (raw !== null && !isNaN(parseInt(raw, 10))) {
       lastIdx = parseInt(raw, 10);
     }
@@ -97,48 +118,79 @@ function pickRandomBgIndex(theme) {
     attempts++;
   } while (list.length > 1 && newIdx === lastIdx && attempts < 10);
 
-  sessionStorage.setItem('poketools_last_bg_' + theme, newIdx);
-  currentBgIndices[theme] = newIdx;
+  sessionStorage.setItem('poketools_last_bg', newIdx);
+  currentBgIndex = newIdx;
   return newIdx;
 }
 
 function updateSiteBackground(fade, forceRandom) {
-  var theme = getActiveTheme();
-  var list = THEME_WALLPAPERS[theme] || [];
-  if (!list.length) return;
+  var list = SITE_WALLPAPERS;
+  if (!list || !list.length) return;
 
   var idx;
-  if (forceRandom || currentBgIndices[theme] < 0) {
-    idx = pickRandomBgIndex(theme);
+  if (forceRandom || currentBgIndex < 0) {
+    idx = pickRandomBgIndex();
   } else {
-    idx = currentBgIndices[theme];
+    idx = currentBgIndex;
   }
 
   var bgUrl = list[idx];
-  var layer = document.getElementById('site-bg-layer');
-  if (!layer) return;
+  var layerA = document.getElementById('site-bg-layer');
+  var layerB = document.getElementById('site-bg-layer-alt');
+  if (!layerA) return;
 
-  if (fade) {
-    layer.classList.add('bg-fade-out');
-    setTimeout(function () {
-      layer.style.backgroundImage = 'url("' + bgUrl + '")';
-      layer.classList.remove('bg-fade-out');
-    }, 200);
-  } else {
-    layer.style.backgroundImage = 'url("' + bgUrl + '")';
+  // Fallback caso não encontre a camada secundária
+  if (!layerB) {
+    layerA.style.backgroundImage = 'url("' + bgUrl + '")';
+    return;
   }
+
+  var currentLayer = (activeBgLayer === 0) ? layerA : layerB;
+  var nextLayer = (activeBgLayer === 0) ? layerB : layerA;
+
+  if (!fade) {
+    currentLayer.style.backgroundImage = 'url("' + bgUrl + '")';
+    currentLayer.style.opacity = '1';
+    nextLayer.style.opacity = '0';
+    return;
+  }
+
+  // Pré-carregamento para garantir transição suave (crossfade) sem telas pretas ou piscadas
+  var thisToken = ++bgPreloadToken;
+  var img = new Image();
+  var applyTransition = function () {
+    if (thisToken !== bgPreloadToken) return;
+    nextLayer.style.backgroundImage = 'url("' + bgUrl + '")';
+    nextLayer.style.opacity = '1';
+    currentLayer.style.opacity = '0';
+    activeBgLayer = (activeBgLayer === 0) ? 1 : 0;
+  };
+
+  img.onload = applyTransition;
+  img.onerror = applyTransition;
+  img.src = bgUrl;
 }
 
-function cycleSiteBackground() {
-  var theme = getActiveTheme();
-  var list = THEME_WALLPAPERS[theme] || [];
-  if (!list.length) return;
+function resetBgAutoRotation() {
+  if (bgAutoRotationTimer) {
+    clearInterval(bgAutoRotationTimer);
+    bgAutoRotationTimer = null;
+  }
+  bgAutoRotationTimer = setInterval(function () {
+    cycleSiteBackground(true);
+  }, BG_ROTATION_INTERVAL_MS);
+}
 
-  var currentIdx = currentBgIndices[theme] >= 0 ? currentBgIndices[theme] : 0;
+function cycleSiteBackground(fade) {
+  var list = SITE_WALLPAPERS;
+  if (!list || !list.length) return;
+
+  var currentIdx = currentBgIndex >= 0 ? currentBgIndex : 0;
   var nextIdx = (currentIdx + 1) % list.length;
-  currentBgIndices[theme] = nextIdx;
-  sessionStorage.setItem('poketools_last_bg_' + theme, nextIdx);
-  updateSiteBackground(true, false);
+  currentBgIndex = nextIdx;
+  sessionStorage.setItem('poketools_last_bg', nextIdx);
+  updateSiteBackground(fade !== false, false);
+  resetBgAutoRotation();
 }
 
 // ─── MODO DIA / NOITE ───
@@ -153,6 +205,8 @@ function initTheme() {
   }
   // A cada novo carregamento ou refresh, sorteia um wallpaper diferente
   updateSiteBackground(false, true);
+  // Inicia contagem regressiva para rotação suave a cada 3 minutos
+  resetBgAutoRotation();
 }
 
 function toggleDayNightMode() {
@@ -160,7 +214,7 @@ function toggleDayNightMode() {
   var theme = isLight ? 'light' : 'dark';
   localStorage.setItem('poketools_theme', theme);
   updateThemeIcon(theme);
-  updateSiteBackground(true, true);
+  // Mantém o mesmo wallpaper ativo ao alternar entre claro e escuro
   if (typeof initParticles === 'function') initParticles();
 }
 

@@ -114,7 +114,7 @@ body {
   background-image: none !important;
 }
 
-/* ─── PAPEL DE PAREDE DINÂMICO PIXEL ART (TEMAS CLARO E ESCURO) ─── */
+/* ─── PAPEL DE PAREDE DINÂMICO UNIFICADO (CROSSFADE ULTRA FLUIDO) ─── */
 .site-bg-layer {
   position: fixed;
   inset: 0;
@@ -125,16 +125,14 @@ body {
   background-repeat: no-repeat;
   image-rendering: auto;
   opacity: 1;
-  background-image: url('../assets/backgrounds/dark-1.png');
-  transition: opacity 0.4s ease-in-out;
+  background-image: url('../assets/backgrounds/wallpaper-01.png');
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
 }
 
-body.light-mode .site-bg-layer {
-  background-image: url('../assets/backgrounds/light-1.jpg');
-}
-
-.site-bg-layer.bg-fade-out {
-  opacity: 0.15;
+.site-bg-layer.site-bg-layer-alt {
+  opacity: 0;
+  background-image: none;
 }
 
 .site-bg-overlay {
